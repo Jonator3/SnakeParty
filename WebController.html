@@ -1,0 +1,97 @@
+<html>
+<head>
+<meta name='viewport' content='width=device-width, initial-scale=0.8, user-scalable=no'>
+<title>Controller</title>
+<style>* { margin: 0; padding: 0; }html, body { width: 100%; height: 100%; }canvas { display: block; }</style>
+</head>
+<body id='body'>
+<canvas id='canvas'></canvas>
+<script>
+
+var id = "0";
+var color = "#555555";
+var bk_color = "#333333"
+const socket = new WebSocket('ws://' + location.hostname + ':81');
+
+socket.addEventListener('open', function (event) {
+    socket.send('hello server!');});
+
+socket.addEventListener('message', function (event) {
+    if(event.data.startsWith("C:")){
+        color = event.data.split(":")[1];
+        draw();}
+    if(event.data.startsWith("ping")){
+        socket.send("pong");}
+    if(event.data.startsWith("T:")){
+        var time = parseInt(event.data.split(":")[1]);
+        console.log("Ping:"+time)
+        if(time>650000){
+            bk_color="#403333"}
+        else{
+            bk_color="#333333"}
+        draw()}
+    console.log('server says: ', event.data);});
+
+var bodyElem = document.getElementById('body');
+bodyElem.addEventListener('keypress', function(event) {
+    var key = event.keyCode;
+    console.log('key:'+ key);
+    if(key==97) {
+        socket.send('1l');
+        console.log('left');}
+    if(key==119){
+        socket.send('1u');
+        console.log('up');}
+    if(key==100){
+        socket.send('1r');
+        console.log('right');}
+    if(key==115 ){
+        socket.send('1d');
+        console.log('down');}}, false);
+bodyElem.addEventListener('touchstart', function(event) {
+    var touch = event.touches[0]
+    if((touch.clientX / bodyElem.clientWidth) / (touch.clientY / bodyElem.clientHeight) < 1) {
+        if((touch.clientX / bodyElem.clientWidth) / ((bodyElem.clientHeight - touch.clientY) / bodyElem.clientHeight) < 1) {
+            socket.send('0l');console.log('left');}
+        else {socket.send('0d');
+            console.log('down');}}
+    else {
+        if(((bodyElem.clientWidth - touch.clientX) / bodyElem.clientWidth) / (touch.clientY / bodyElem.clientHeight) < 1) {
+            socket.send('0r');
+            console.log('right');}
+        else {
+            socket.send('0u');
+            console.log('up');}}}, false);
+
+function draw() {
+    var canvasElem = document.getElementById('canvas');
+    canvasElem.width = window.innerWidth;
+    canvasElem.height = window.innerHeight;
+    var ctx = canvasElem.getContext('2d');
+    var centerX = canvasElem.width / 2;
+    var centerY = canvasElem.height / 2;
+    ctx.fillStyle = bk_color;
+    ctx.fillRect(0, 0, canvasElem.width, canvasElem.height);
+    ctx.fillStyle = color;
+    ctx.moveTo(centerX, centerY - 175);
+    ctx.lineTo(centerX + 40, centerY - 120);
+    ctx.lineTo(centerX - 40, centerY - 120);
+    ctx.fill();
+    ctx.moveTo(centerX + 175, centerY);
+    ctx.lineTo(centerX + 120, centerY - 40);
+    ctx.lineTo(centerX + 120, centerY + 40);
+    ctx.fill();
+    ctx.moveTo(centerX, centerY + 175);
+    ctx.lineTo(centerX + 40, centerY + 120);
+    ctx.lineTo(centerX - 40, centerY + 120);
+    ctx.fill();
+    ctx.moveTo(centerX - 175, centerY);
+    ctx.lineTo(centerX - 120, centerY - 40);
+    ctx.lineTo(centerX - 120, centerY + 40);
+    ctx.fill();}
+draw();
+window.addEventListener('resize', function(event){draw();});
+
+</script>
+</body>
+</html>
