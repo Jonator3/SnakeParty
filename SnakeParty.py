@@ -1,3 +1,8 @@
+# Made by Joey Pehlke
+# Github: https://github.com/Jonator3
+# last Update: 31.10.2019
+
+
 import Window
 import pygame
 import Game
