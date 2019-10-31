@@ -27,7 +27,7 @@ class PowerUp(object):
         X = X + 20
         if R <= X:
             return "GOLD"
-        X = X + 5
+        X = X + 7
         if R <= X:
             return "SHORT"
 
@@ -253,12 +253,12 @@ class Game(object):
     def setPowerUp(self):
         R = random.randint(1, 100)
         trigger = 0
-        if len(self.power_ups) == 0:
+        if len(self.power_ups) <= len(self.snakes)/2:
             trigger = 100
-        elif len(self.power_ups) > (len(self.snakes)* 1.3):
+        elif len(self.power_ups) > (len(self.snakes) * 1.7):
             trigger = 0
         else:
-            trigger = round(100 / (len(self.power_ups) * 10))
+            trigger = round(100 / ((len(self.power_ups) * 10)/(len(self.snakes)/2)) )
 
         if R <= trigger:
             self.power_ups.append(PowerUp(self))
