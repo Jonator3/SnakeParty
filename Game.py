@@ -368,7 +368,6 @@ class Game(object):
         isRunning = True
         clock = pygame.time.Clock()
         tick = 0
-        input = []
         sec = 5
 
         # waits 10sec before Game start (with a timer on Screen)
@@ -395,11 +394,10 @@ class Game(object):
 
             # checking key input
             input = Window.checkInput()
-            if input is None:
-                input = []
-            elif input[pygame.K_SPACE]:
-                print("Game ended by pressing 'Space'")
-                break
+            if input is not None:
+                if input[pygame.K_SPACE]:
+                    print("Game ended by pressing 'Space'")
+                    break
             self.giveInput() # checks input of the Players
             self.move()  # moves the snakes
             Window.drawGameFrame(self) # sets screen
@@ -424,9 +422,7 @@ class Game(object):
             Players = data.Players
             for P in Players:
                 P.getController()
-            if input is None:
-                input = []
-            else:
+            if input is not None:
                 if input[13]:  # index 13=Enter
                     start(self.size, self.length, activePlayers())
                     break

@@ -9,10 +9,7 @@ import datetime
 import sys
 import time
 import os
-import data
 
-#pip install aiohttp
-#pip install websockets
 
 inc_msgs = queue.Queue()
 outg_msgs = queue.Queue()
@@ -75,7 +72,6 @@ class Controller(object):
                 elif input[1] == "r":
                     self.input = [False, False, False, True]
             if input.startswith("1"):
-                #time.sleep(0.1)
                 if input[1] == "u":
                     self.input = [True, False, False, False]
                 elif input[1] == "l":
@@ -107,7 +103,6 @@ def getControllerById(id):
 
 def aiohttp_server():
     global html
-    color = "#ffffff"
 
     async def http_handler(request):
         return web.Response(text=html, content_type="text/html")

@@ -1,7 +1,6 @@
 import pygame
 import ControllerManager as CM
 import sys
-import multiprocessing
 import data
 import ctypes
 

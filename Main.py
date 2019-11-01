@@ -7,7 +7,6 @@ import pygame
 import Game
 import qrcode
 import socket
-import random
 import ControllerManager as CM
 import data
 import queue
@@ -96,7 +95,6 @@ def main():
     global Players
     print("System started!")
     clock = pygame.time.Clock()
-    input = None
 
     length = data.DEF_LEN
     size = data.DEF_SIZE
@@ -114,9 +112,7 @@ def main():
 
         ac = Game.activePlayers()
         input = Window.checkInput()
-        if input is None:
-            input = []
-        else:
+        if input is not None:
             if input[pygame.K_UP]:
                 if state == 0:
                     if length < 15:
