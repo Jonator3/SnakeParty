@@ -8,6 +8,8 @@ import string
 import datetime
 import sys
 import time
+import os
+import data
 
 #pip install aiohttp
 #pip install websockets
@@ -45,10 +47,7 @@ class Controller(object):
         self.send("C:"+self.color)
 
     def send(self, msg):
-        try:
-            send_message(self.id, msg)
-        except:
-            print("sending failed ("+self.id+", "+msg+")")
+        send_message(self.id, msg)
 
     def isClosed(self):
         return self.closed
@@ -137,11 +136,12 @@ def websocket_server():
     async def producer_handler(ws):
         global isRunning
         while isRunning:
+
+            await loop.run_in_executor(None, producer)
+            message = buf.get()
             try:
-                await loop.run_in_executor(None, producer)
-                message = buf.get()
                 await connections[message[0]].send(message[1])
-            except:
+            except Exception:
                 print("Handler Error")
 
     def producer():
@@ -168,8 +168,8 @@ def websocket_server():
 
     loop = asyncio.new_event_loop()
     asyncio.set_event_loop(loop)
-    start_server = websockets.serve(ws_handler=websocket_handler, port=81)
-    loop.run_until_complete(start_server)
+    server = websockets.serve(ws_handler=websocket_handler, port=81)
+    loop.run_until_complete(server)
     loop.run_forever()
 
 
@@ -253,7 +253,7 @@ def stop():
     isRunning = False
     for C in Controllers:
         C.close()
-    sys.exit()
+    os._exit(0)
 
 
 S = threading.Thread(target=start)

@@ -2,14 +2,22 @@ import pygame
 import ControllerManager as CM
 import sys
 import multiprocessing
+import data
+import ctypes
 
+
+myappid = 'SnakeParty' # arbitrary string
+ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(myappid)
 
 pygame.init()
-Screen = pygame.display.set_mode((800, 600), pygame.FULLSCREEN)
+pygame.mouse.set_visible(False)
+icon = pygame.image.load(data.ICON)
+pygame.display.set_icon(icon)
+Screen = pygame.display.set_mode((800, 600), pygame.FULLSCREEN | pygame.NOFRAME)
 pygame.display.set_caption("Snake Party")
 LineSize = 50
-Font = pygame.font.Font('unispace.ttf', 40)
-MiniFont = pygame.font.Font('unispace.ttf', 27)
+Font = pygame.font.Font(data.FONT, 40)
+MiniFont = pygame.font.Font(data.FONT, 27)
 
 Screen.fill([60, 60, 60])
 text = Font.render("LOADING", True, [200, 200, 200])
@@ -156,11 +164,11 @@ def checkInput():
         if event.type == pygame.QUIT:
             pygame.quit()
             CM.stop()
-            sys.exit()
+            sys.exit(0)
 
         keys = pygame.key.get_pressed()
         if keys[pygame.K_END]:
             pygame.quit()
             CM.stop()
-            sys.exit()
+            sys.exit(0)
         return keys
