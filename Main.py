@@ -10,20 +10,31 @@ import socket
 import random
 import ControllerManager as CM
 import data
+import queue
 
 
 pygame.init()
 wasd = [pygame.K_w, pygame.K_a, pygame.K_s, pygame.K_d]
 arrows = [pygame.K_UP, pygame.K_LEFT, pygame.K_DOWN, pygame.K_RIGHT]
 
+class Color(object):
+
+    def __init__(self, name, RGB):
+        self.color = RGB
+        self.name = name
+        
+    def hex(self):
+
+        output = '#%02x%02x%02x' % (self.color[0], self.color[1], self.color[2])
+
+        return output
+
 
 class Player(object):
 
-    def __init__(self, name, color, hexC):
+    def __init__(self):
         self.Controller = None
-        self.name = name
-        self.color = color
-        self.hexC = hexC
+        self.color = None
 
     def isActive(self):
         if self.Controller is None:
@@ -35,29 +46,49 @@ class Player(object):
         if self.Controller is None:
             self.Controller = CM.getFreeController()
             if not self.Controller is None:
-                self.Controller.setColor(self.hexC)
+                self.color = Colores.get()
+                self.Controller.setColor(self.color.hex())
         else:
             if self.Controller.isClosed():
                 self.Controller = None
+                Colores.put(self.color)
+                self.color = None
+
+    def getColor(self):
+        if self.isActive():
+            if not Colores.empty():
+                input = self.getInput()
+                if input[0]:
+                    Colores.put(self.color)
+                    self.color = Colores.get()
+                    self.Controller.setColor(self.color.hex())
 
     def getInput(self):
         input = self.Controller.getLastInput()
         return input
 
 
-global Players
+def setPlayers(players):
+    temp = 0
+    while temp < data.MAX_PLAYERS:
+        players.append(Player())
+        temp = temp+1
+    
+
+global Players, Colores
+Colores = queue.Queue()
 Players = []
-Players.append(Player("Blue", [80, 100, 255], "#5064FF"))
-Players.append(Player("Orange", [255, 130, 0], "#FF8200"))
-Players.append(Player("Pink", [230, 40, 150], "#E62896"))
-Players.append(Player("Red", [255, 40, 20], "#FF2814"))
-Players.append(Player("Yellow", [220, 200, 20], "#DCC814"))
-Players.append(Player("Cyan", [30, 255, 170], "#1EFFAA"))
-Players.append(Player("Light-Blue", [120, 200, 255], "#78C8FF"))
-Players.append(Player("White", [240, 240, 240], "#F0F0F0"))
-Players.append(Player("Purple", [200, 10, 250], "#C80AFA"))
-Players.append(Player("Light-Pink", [255, 120, 130], "#FF7882"))
-random.shuffle(Players)
+Colores.put(Color("Blue", [80, 100, 255]))
+Colores.put(Color("Orange", [255, 130, 0]))
+Colores.put(Color("Pink", [230, 40, 150]))
+Colores.put(Color("Red", [255, 40, 20]))
+Colores.put(Color("Yellow", [220, 200, 20]))
+Colores.put(Color("Cyan", [30, 255, 170]))
+Colores.put(Color("Light-Blue", [120, 200, 255]))
+Colores.put(Color("White", [240, 240, 240]))
+Colores.put(Color("Purple", [200, 10, 250]))
+Colores.put(Color("Light-Pink", [255, 120, 130]))
+setPlayers(Players)
 data.Players = Players
 
 
@@ -81,7 +112,6 @@ def main():
         pygame.time.delay(20)
         clock.tick(15)
 
-        random.shuffle(Players)
         ac = Game.activePlayers()
         input = Window.checkInput()
         if input is None:
@@ -121,6 +151,7 @@ def main():
         Window.drawMenu(state, length, data.SIZE_SET[size], qrc, link, len(ac))
         for P in Players:
             P.getController()
+            P.getColor()
 
 
 main()

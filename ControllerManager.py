@@ -91,7 +91,7 @@ class Controller(object):
             if not isRunning:
                 break
             self.ping()
-            time.sleep(1)
+            time.sleep(2)
 
     def getLastInput(self):
         lastInput = self.input

@@ -90,7 +90,7 @@ class Snake(object):
     def __init__(self, game, index, player):
         self.player = player
         self.underdog = 1
-        self.name = player.name
+        self.name = player.color.name
         self.index = index
         self.game = game
         self.color = player.color
@@ -422,7 +422,6 @@ class Game(object):
             Window.drawEndScreen(self, winner)
             input = Window.checkInput()
             Players = data.Players
-            random.shuffle(Players)
             for P in Players:
                 P.getController()
             if input is None:
