@@ -93,7 +93,7 @@ class Snake(object):
         self.name = player.color.name
         self.index = index
         self.game = game
-        self.color = player.color
+        self.color = player.color.color
         self.len = 3
         self.movement = [0, 0]
         self.hasMovement = False
