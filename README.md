@@ -16,5 +16,5 @@ New Controllers only connect while your in the Menu or in the Gameend Screen.
 The Game is ready to use on Windows.  
 (Just start `SnakeParty.exe`)  
 
-On linux or Mac you can start the Game by starting `Main.py` with Python 3.7 or higher.  
+On linux or Mac you can start the Game by starting `Main.py` with Python 3.  
 (`pygame`, `websockets` and `qrcode` need to be installed)
