@@ -1,6 +1,8 @@
 # Made by Joey Pehlke
 # Github: https://github.com/Jonator3
-# last Update: 31.10.2019
+# Projeckt: https://github.com/Jonator3/SnakeParty
+# last Update: 02.12.2019
+# Version: Beta 0.6
 
 import Window
 import pygame
