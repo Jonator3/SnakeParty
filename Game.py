@@ -122,7 +122,7 @@ class Snake(object):
             return False
 
     def addScore(self, value):
-        self.score = self.score+ value
+        self.score = self.score + value
         if self.score < 0:
             self.score = 0
 
@@ -131,7 +131,11 @@ class Snake(object):
 
     def reset(self):
         self.resetTag = False
-        self.addScore(-75)
+        length = len(self.body)
+        miss = round((length/2) - 100)
+        if miss > 0:
+            miss = 0
+        self.addScore(miss)
         self.len = 5
         self.movement = [0, 0]
         self.hasMovement = False
@@ -314,7 +318,7 @@ class Game(object):
                                 for S in self.snakes:
                                     if S != P:
                                         if S == p:
-                                            S.addScore(50)
+                                            S.addScore(100)
                                         else:
                                             S.addScore(25)
 
@@ -348,8 +352,8 @@ class Game(object):
                         S.addScore(round(150*mult))
                         S.addLenCount(2)
                     if type == "SHORT":
-                        S.addScore(round(100*mult))
-                        S.addScore(round((len(S.getBody())-3)*5*mult))
+                        S.addScore(round(50*mult))
+                        S.addScore(round((len(S.getBody())-3)*10*mult))
                         S.setLen(3)
                     if type == "INF_LEN":
                         S.addScore(round(60*mult))
