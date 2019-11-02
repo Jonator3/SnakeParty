@@ -95,12 +95,15 @@ def drawWaitScreen(time):
     pygame.display.update()
 
 
-def drawMenu(state, length, size, qr, link, playerCount):
+def drawMenu(state, length, size, qr, link, acc, inacc):
     Screen.fill([60, 60, 60])
 
     textLen = Font.render(str(length)+"min", True, [255, 255, 255])
     textSize = Font.render(str(size), True, [255, 255, 255])
     textStart = Font.render("Start", True, [255, 255, 255])
+
+    if len(acc) < 1:
+        textStart = Font.render("Start", True, [170, 170, 170])
 
     pygame.draw.rect(Screen, [240, 130, 20], ((state*200)+100, 140, 200, LineSize+20))
 
@@ -109,14 +112,29 @@ def drawMenu(state, length, size, qr, link, playerCount):
     Screen.blit(textStart, (((200 - textStart.get_width()) / 2) + 500, 150))
     Screen.blit(qr, (0, 600-qr.get_height()))
 
+    set = qr.get_width() + 20
+
+    text = MiniFont.render("Used Colores:", True, [180, 180, 180])
+    Screen.blit(text, (set, 250))
+
+    step = set
+    for C in acc:
+        pygame.draw.rect(Screen, C, (step, 280, 35, 35))
+        step = step + 40
+
+    text = MiniFont.render("Free Colores:", True, [180, 180, 180])
+    Screen.blit(text, (set, 330))
+
+    step = set
+    for C in inacc:
+        pygame.draw.rect(Screen, C, (step, 360, 35, 35))
+        step = step + 40
+
     text = MiniFont.render("Length", True, [180, 180, 180])
     Screen.blit(text, (((200-text.get_width())/2)+100, 95))
 
     text = MiniFont.render("Map Size", True, [180, 180, 180])
     Screen.blit(text, (((200 - text.get_width()) / 2) + 300, 95))
-
-    text = MiniFont.render(str(playerCount)+" Players", True, [180, 180, 180])
-    Screen.blit(text, (((200 - text.get_width()) / 2) + 500, 95))
 
     text = MiniFont.render(link, True, [180, 180, 180])
     Screen.blit(text, (360, 600-text.get_height()))
