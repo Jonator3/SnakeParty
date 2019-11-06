@@ -19,6 +19,7 @@ pygame.init()
 wasd = [pygame.K_w, pygame.K_a, pygame.K_s, pygame.K_d]
 arrows = [pygame.K_UP, pygame.K_LEFT, pygame.K_DOWN, pygame.K_RIGHT]
 
+
 class Color(object):
 
     def __init__(self, name, RGB):
@@ -160,6 +161,8 @@ def main():
                 elif state == 2:
                     if len(ac) > 0:
                         Game.start(data.SIZE_SET[size], length, ac)
+                        for P in Players:
+                            P.getInput()
                         ac = Game.activePlayers()
                         length = data.DEF_LEN
                         size = data.DEF_SIZE
