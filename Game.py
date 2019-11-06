@@ -1,9 +1,11 @@
 import random
-import pygame
+
 import SoundManager as SM
 import ControllerManager as CM
 import Window
 import data
+
+import pygame
 
 
 def start(size, length, Players):

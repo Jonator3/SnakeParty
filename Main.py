@@ -1,18 +1,18 @@
 # Made by Joey Pehlke
 # Github: https://github.com/Jonator3
 # Projeckt: https://github.com/Jonator3/SnakeParty
-# last Update: 02.12.2019
-# Version: Beta 0.6
+# last Update: 06.11.2019
 import datetime
+import socket
+import queue
 
 import Window
-import pygame
-import Game
-import qrcode
-import socket
 import ControllerManager as CM
 import data
-import queue
+import Game
+
+import pygame
+import qrcode
 
 
 pygame.init()

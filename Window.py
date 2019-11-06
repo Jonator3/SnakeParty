@@ -1,8 +1,10 @@
-import pygame
-import ControllerManager as CM
 import sys
-import data
 import ctypes
+
+import data
+import ControllerManager as CM
+
+import pygame
 
 
 myappid = 'SnakeParty' # arbitrary string
