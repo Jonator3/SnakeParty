@@ -6,13 +6,13 @@ import datetime
 import socket
 import queue
 
+import pygame
+import qrcode
+
 import Window
 import ControllerManager as CM
 import data
 import Game
-
-import pygame
-import qrcode
 
 
 pygame.init()
