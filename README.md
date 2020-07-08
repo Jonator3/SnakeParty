@@ -14,7 +14,7 @@ You can stop the Game by pressing `Space`
 After the Game ended press `Space` to return to Menu or `Enter` for a Rematch.  
 
 The Game is ready to use on Windows.  
-(Just start `SnakeParty.exe`)  
+(Just start `start.bat`)  
 
 On linux or Mac you can start the Game by starting `Main.py` with Python 3.  
-(`pygame`, `websockets` and `qrcode` need to be installed)
+(`pygame`, `websockets`, `aiohttp` and `qrcode` need to be installed)
