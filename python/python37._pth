@@ -1,9 +1,0 @@
-python37.zip
-Scripts
-Include
-Lib
-Lib\site-packages
-.
-
-# Uncomment to run site.main() automatically
-#import site
