@@ -1,0 +1,1 @@
+pypy\pypy3.exe Main.py

@@ -54,6 +54,7 @@ class Player(object):
                 self.Controller = None
                 Colores.put(self.color)
                 self.color = None
+                self.getController()
 
     def getColor(self):
         if self.isActive():
@@ -68,6 +69,9 @@ class Player(object):
                         self.lastSwitch = datetime.datetime.now()
 
     def getInput(self):
+        if self.Controller is None:
+            self.getController()
+            return [False, False, False, False]
         input = self.Controller.getLastInput()
         return input
 

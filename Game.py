@@ -29,7 +29,7 @@ class PowerUp(object):
         X = X + 20
         if R <= X:
             return "GOLD"
-        X = X + 7
+        X = X + 15
         if R <= X:
             return "SHORT"
 
@@ -146,7 +146,11 @@ class Snake(object):
         self.body.insert(0, Block(self.game, self.color, self.pos))
 
     def giveInput(self):
-        input = self.player.getInput()
+        input = []
+        try:
+            input = self.player.getInput()
+        except:
+            input = [False, False, False, False]
         if self.hasMovement:
             if self.movement[1] == 0:
                 if input[0]:
