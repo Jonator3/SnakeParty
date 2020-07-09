@@ -1,5 +1,6 @@
 import sys
 import ctypes
+import math
 
 import data
 import ControllerManager as CM
@@ -14,7 +15,8 @@ pygame.init()
 pygame.mouse.set_visible(False)
 icon = pygame.image.load(data.ICON)
 pygame.display.set_icon(icon)
-Screen = pygame.display.set_mode((800, 600), pygame.FULLSCREEN | pygame.NOFRAME)
+Screen: pygame.Surface = pygame.Surface((800, 600))
+Window: pygame.Surface = pygame.display.set_mode(pygame.display.list_modes()[0], pygame.FULLSCREEN | pygame.NOFRAME)
 pygame.display.set_caption("Snake Party")
 LineSize = 50
 Font = pygame.font.Font(data.FONT, 40)
@@ -23,7 +25,17 @@ MiniFont = pygame.font.Font(data.FONT, 27)
 Screen.fill([60, 60, 60])
 text = Font.render("LOADING", True, [200, 200, 200])
 Screen.blit(text, (((800 - text.get_width()) / 2), (600 - text.get_height()) / 2))
-pygame.display.update()
+
+
+def update():
+    h = Window.get_height()
+    w = math.floor(Screen.get_width() * (h / Screen.get_height()))
+    screen_resize = pygame.transform.scale(Screen, (w, h))
+    Window.fill((0, 0, 0))
+    Window.blit(screen_resize, (Window.get_width()//2 - (w // 2), 0))
+    pygame.display.update()
+
+update()
 
 
 def drawGameFrame(game):
@@ -82,7 +94,7 @@ def drawGameFrame(game):
         Screen.blit(text, (795 - text.get_width(), step))
         step = step+LineSize
 
-    pygame.display.update()
+    update()
 
 
 def drawWaitScreen(time):
@@ -94,7 +106,7 @@ def drawWaitScreen(time):
     text = MiniFont.render("Game starts in:", True, [200, 200, 200])
     Screen.blit(text, (((800 - text.get_width()) / 2), 200))
 
-    pygame.display.update()
+    update()
 
 
 def drawMenu(state, length, size, qr, link, acc, inacc):
@@ -141,7 +153,7 @@ def drawMenu(state, length, size, qr, link, acc, inacc):
     text = MiniFont.render(link, True, [180, 180, 180])
     Screen.blit(text, (360, 600-text.get_height()))
 
-    pygame.display.update()
+    update()
 
 
 def drawEndScreen(game, Player):
@@ -175,7 +187,7 @@ def drawEndScreen(game, Player):
         Screen.blit(text, (795 - text.get_width(), step))
         step = step + LineSize
 
-    pygame.display.update()
+    update()
         
 
 def checkInput():

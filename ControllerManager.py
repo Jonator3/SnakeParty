@@ -252,5 +252,4 @@ def stop():
     os._exit(0)
 
 
-S = threading.Thread(target=start)
-S.start()
+start()

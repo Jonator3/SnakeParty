@@ -131,7 +131,6 @@ def main():
     qr = qrcode.make(link).resize((350, 350)).convert("RGB")
     qrc = pygame.image.frombuffer(qr.tobytes(), qr.size, "RGB")
 
-    CM.S.join()
     while CM.isRunning:
         pygame.time.delay(20)
         clock.tick(15)
