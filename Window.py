@@ -1,5 +1,4 @@
 import sys
-import ctypes
 import math
 
 import data
@@ -7,17 +6,14 @@ import ControllerManager as CM
 
 import pygame
 
-
-myappid = 'SnakeParty' # arbitrary string
-ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(myappid)
-
 pygame.init()
-pygame.mouse.set_visible(False)
+pygame.mouse.set_visible(True)
 icon = pygame.image.load(data.ICON)
 pygame.display.set_icon(icon)
 Screen: pygame.Surface = pygame.Surface((800, 600))
-Window: pygame.Surface = pygame.display.set_mode(pygame.display.list_modes()[0], pygame.FULLSCREEN | pygame.NOFRAME)
+Window: pygame.Surface = pygame.display.set_mode((Screen.get_width(), Screen.get_height()))
 pygame.display.set_caption("Snake Party")
+FullScreen: bool = False
 LineSize = 50
 Font = pygame.font.Font(data.FONT, 40)
 MiniFont = pygame.font.Font(data.FONT, 27)
@@ -25,6 +21,17 @@ MiniFont = pygame.font.Font(data.FONT, 27)
 Screen.fill([60, 60, 60])
 text = Font.render("LOADING", True, [200, 200, 200])
 Screen.blit(text, (((800 - text.get_width()) / 2), (600 - text.get_height()) / 2))
+
+
+def toggelFullScreen():
+    print("toggel")
+    global FullScreen
+    FullScreen = not FullScreen
+    pygame.mouse.set_visible(not FullScreen)
+    if FullScreen:
+        Window = pygame.display.set_mode(pygame.display.list_modes()[0], pygame.FULLSCREEN)
+    else:
+        Window = pygame.display.set_mode((Screen.get_width(), Screen.get_height()))
 
 
 def update():
@@ -191,15 +198,20 @@ def drawEndScreen(game, Player):
         
 
 def checkInput():
+    keys = None
     for event in pygame.event.get():
-        if event.type == pygame.QUIT:
+        if event.type == 512: # 512 should be pygame.QUIT
+            pygame.display.quit()
             pygame.quit()
             CM.stop()
             sys.exit(0)
-
-        keys = pygame.key.get_pressed()
+        if event.type == 768: # on key down
+            keys = pygame.key.get_pressed()
+    if keys:
         if keys[pygame.K_END]:
             pygame.quit()
             CM.stop()
             sys.exit(0)
-        return keys
+        if keys[pygame.K_F11]:
+            toggelFullScreen()
+    return keys
