@@ -1,11 +1,8 @@
 import random
 
-import SoundManager as SM
-import ControllerManager as CM
 import Window
 import data
 
-import pygame
 
 
 def start(size, length, Players):
@@ -349,7 +346,6 @@ class Game(object):
             for P in self.power_ups:
                 if S.getBody()[-1].getPos() == P.getPos():
                     self.power_ups.remove(P)
-                    SM.play(1)
                     type = P.getType()
                     if type == "DEF":
                         S.addScore(round(100*mult))
@@ -376,13 +372,11 @@ class Game(object):
 
     def Run(self):
         isRunning = True
-        clock = pygame.time.Clock()
         tick = 0
         sec = 5
 
         # waits 10sec before Game start (with a timer on Screen)
         while sec > 0:
-            pygame.time.delay(20)
             clock.tick(1)
             Window.checkInput()
             Window.drawWaitScreen(sec)
@@ -394,7 +388,6 @@ class Game(object):
 
         # Main Game loop
         while isRunning:
-            pygame.time.delay(20)
             clock.tick(data.CLOCK_SPEED)
             if tick >= data.CLOCK_SPEED: # Time system for the Game Clock
                 self.tick()
@@ -402,19 +395,12 @@ class Game(object):
             else:
                 tick = tick+1
 
-            # checking key input
-            input = Window.checkInput()
-            if input is not None:
-                if input[pygame.K_SPACE]:
-                    print("Game ended by pressing 'Space'")
-                    break
+
             self.giveInput() # checks input of the Players
             self.move()  # moves the snakes
             Window.drawGameFrame(self) # sets screen
-            SM.enable(True)
             isRunning = self.shouldRun() # checks if game time is over
 
-        SM.enable(False)
         winner = []
         winner.append(self.snakes[0])
         for P in self.snakes[1:]:
@@ -424,20 +410,12 @@ class Game(object):
             elif P.getScore() == winner[0].getScore():
                 winner.append(P)
 
-        while CM.isRunning:
-            pygame.time.delay(20)
+        while True:
             clock.tick(data.CLOCK_SPEED)
             Window.drawEndScreen(self, winner)
-            input = Window.checkInput()
             Players = data.Players
             for P in Players:
                 P.getController()
-            if input is not None:
-                if input[13]:  # index 13=Enter
-                    start(self.size, self.length, activePlayers())
-                    break
-                elif input[pygame.K_SPACE]:
-                    break
 
 def activePlayers():
     Players = data.Players

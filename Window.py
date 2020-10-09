@@ -2,9 +2,6 @@ import sys
 import math
 
 import data
-import ControllerManager as CM
-
-import pygame
 
 pygame.init()
 pygame.mouse.set_visible(True)
@@ -195,23 +192,4 @@ def drawEndScreen(game, Player):
         step = step + LineSize
 
     update()
-        
 
-def checkInput():
-    keys = None
-    for event in pygame.event.get():
-        if event.type == 512: # 512 should be pygame.QUIT
-            pygame.display.quit()
-            pygame.quit()
-            CM.stop()
-            sys.exit(0)
-        if event.type == 768: # on key down
-            keys = pygame.key.get_pressed()
-    if keys:
-        if keys[pygame.K_END]:
-            pygame.quit()
-            CM.stop()
-            sys.exit(0)
-        if keys[pygame.K_F11]:
-            toggelFullScreen()
-    return keys
