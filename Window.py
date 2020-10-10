@@ -1,19 +1,19 @@
 import sys
 import math
 
-import data
+import setup
 
 pygame.init()
 pygame.mouse.set_visible(True)
-icon = pygame.image.load(data.ICON)
+icon = pygame.image.load(setup.ICON)
 pygame.display.set_icon(icon)
 Screen: pygame.Surface = pygame.Surface((800, 600))
 Window: pygame.Surface = pygame.display.set_mode((Screen.get_width(), Screen.get_height()))
 pygame.display.set_caption("Snake Party")
 FullScreen: bool = False
 LineSize = 50
-Font = pygame.font.Font(data.FONT, 40)
-MiniFont = pygame.font.Font(data.FONT, 27)
+Font = pygame.font.Font(setup.FONT, 40)
+MiniFont = pygame.font.Font(setup.FONT, 27)
 
 Screen.fill([60, 60, 60])
 text = Font.render("LOADING", True, [200, 200, 200])
