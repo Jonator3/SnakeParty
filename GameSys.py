@@ -1,5 +1,7 @@
 import random
 import setup
+from AdvancedTiming import Clock
+import time
 
 
 class PowerUp(object):
@@ -194,7 +196,6 @@ class Snake(object):
         return self.body
 
     def setReset(self):
-        SM.play(0)
         self.resetTag = True
 
     def setUnderdog(self, int):
@@ -211,6 +212,7 @@ class Game(object):
         self.time_min = 0
         self.power_ups = []
         self.snakes = []
+        self.clock = Clock()
 
         i = 0
         for P in Players:
@@ -354,8 +356,6 @@ class Game(object):
                         S.setLen(1000)
 
     def shouldRun(self):
-        if not CM.isRunning:
-            return False
         if self.time_min >= self.length:
             print("Game ended by Time")
             return False
@@ -369,7 +369,7 @@ class Game(object):
 
         # waits 10sec before Game start (with a timer on Screen)
         while sec > 0:
-            clock.tick(1)
+            self.clock.tick(1000)
             Window.checkInput()
             Window.drawWaitScreen(sec)
             sec = sec-1
@@ -380,8 +380,8 @@ class Game(object):
 
         # Main Game loop
         while isRunning:
-            clock.tick(setup.CLOCK_SPEED)
-            if tick >= setup.CLOCK_SPEED: # Time system for the Game Clock
+            self.clock.tick(setup.FRAME_TIME)
+            if tick >= setup.FRAME_TIME: # Time system for the Game Clock
                 self.tick()
                 tick = 0
             else:
@@ -402,18 +402,8 @@ class Game(object):
             elif P.getScore() == winner[0].getScore():
                 winner.append(P)
 
-        while True:
-            clock.tick(setup.CLOCK_SPEED)
-            Window.drawEndScreen(self, winner)
-            Players = setup.Players
-            for P in Players:
-                P.getController()
-
-def activePlayers():
-    Players = setup.Players
-    Aplayers = []
-    for P in Players:
-        if P.isActive():
-            Aplayers.append(P)
-
-    return Aplayers
+        Window.drawEndScreen(self, winner)
+        Players = setup.Players
+        for P in Players:
+            P.getController()
+        time.sleep(10)

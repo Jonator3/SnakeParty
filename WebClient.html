@@ -8,28 +8,22 @@
 <canvas id='canvas'></canvas>
 <script>
 
-var id = "0";
-var color = "#555555";
+var id = new URLSearchParams(window.location.search).get('key');
+var colors = ["#555555","#5064FF","#FF8200","#AAFF14","#FF1414","#FAF000","#14FF8C","#FA6496","#FAFAFA","#DC00FA","#00FFC8"];
+var color = colors[0];
 var bk_color = "#333333"
 const socket = new WebSocket('ws://' + location.hostname + ':41800');
 
 socket.addEventListener('open', function (event) {
-    socket.send('hello server!');});
+    socket.send("id:" + id);});
 
 socket.addEventListener('message', function (event) {
     if(event.data.startsWith("C:")){
-        color = event.data.split(":")[1];
-        draw();}
-    if(event.data.startsWith("ping")){
-        socket.send("pong");}
-    if(event.data.startsWith("T:")){
-        var time = parseInt(event.data.split(":")[1]);
-        console.log("Ping:"+time)
-        if(time>700000){
-            bk_color="#403333"}
-        else{
-            bk_color="#333333"}
-        draw()}
+        color = colors[parseInt(event.data.split(":")[1])];
+    }if(event.data.startsWith("G:")){
+        var data = event.data.split(":")[1];
+
+    }
     console.log('server says: ', event.data);});
 
 var bodyElem = document.getElementById('body');
@@ -37,30 +31,33 @@ bodyElem.addEventListener('keypress', function(event) {
     var key = event.keyCode;
     console.log('key:'+ key);
     if(key==97) {
-        socket.send('1l');
+        socket.send('l');
         console.log('left');}
     if(key==119){
-        socket.send('1u');
+        socket.send('u');
         console.log('up');}
     if(key==100){
-        socket.send('1r');
+        socket.send('r');
         console.log('right');}
+    if(key==13){
+        socket.send('e');
+        console.log('enter');}
     if(key==115 ){
-        socket.send('1d');
+        socket.send('d');
         console.log('down');}}, false);
 bodyElem.addEventListener('touchstart', function(event) {
     var touch = event.touches[0]
     if((touch.clientX / bodyElem.clientWidth) / (touch.clientY / bodyElem.clientHeight) < 1) {
         if((touch.clientX / bodyElem.clientWidth) / ((bodyElem.clientHeight - touch.clientY) / bodyElem.clientHeight) < 1) {
-            socket.send('0l');console.log('left');}
-        else {socket.send('0d');
+            socket.send('l');console.log('left');}
+        else {socket.send('d');
             console.log('down');}}
     else {
         if(((bodyElem.clientWidth - touch.clientX) / bodyElem.clientWidth) / (touch.clientY / bodyElem.clientHeight) < 1) {
-            socket.send('0r');
+            socket.send('r');
             console.log('right');}
         else {
-            socket.send('0u');
+            socket.send('u');
             console.log('up');}}}, false);
 
 function draw() {
@@ -68,27 +65,42 @@ function draw() {
     canvasElem.width = window.innerWidth;
     canvasElem.height = window.innerHeight;
     var ctx = canvasElem.getContext('2d');
-    var centerX = canvasElem.width / 2;
-    var centerY = canvasElem.height / 2;
+    ctx.fillStyle = color;
+    ctx.fillRect(0, 0, canvasElem.width, canvasElem.height);
+    ctx.fillStyle = bk_color;
+    ctx.fillRect(20, 20, canvasElem.width-40, canvasElem.height-40);}
+function drawGame(data) {
+    var canvasElem = document.getElementById('canvas');
+    var size = 15;
+    var fieldsize = 0;
+    var isHorizontal = canvasElem.width > canvasElem.height;
+    var smallside = 0;
+    if(isHorizontal){
+        fieldsize = (canvasElem.height-40)/size;
+        smallside = canvasElem.height;
+    }else {
+        fieldsize = (canvasElem.width-40)/size;
+        smallside = canvasElem.width;
+    }
     ctx.fillStyle = bk_color;
     ctx.fillRect(0, 0, canvasElem.width, canvasElem.height);
     ctx.fillStyle = color;
-    ctx.moveTo(centerX, centerY - 175);
-    ctx.lineTo(centerX + 40, centerY - 120);
-    ctx.lineTo(centerX - 40, centerY - 120);
-    ctx.fill();
-    ctx.moveTo(centerX + 175, centerY);
-    ctx.lineTo(centerX + 120, centerY - 40);
-    ctx.lineTo(centerX + 120, centerY + 40);
-    ctx.fill();
-    ctx.moveTo(centerX, centerY + 175);
-    ctx.lineTo(centerX + 40, centerY + 120);
-    ctx.lineTo(centerX - 40, centerY + 120);
-    ctx.fill();
-    ctx.moveTo(centerX - 175, centerY);
-    ctx.lineTo(centerX - 120, centerY - 40);
-    ctx.lineTo(centerX - 120, centerY + 40);
-    ctx.fill();}
+    ctx.fillRect(0, 0, smallside, smallside);
+    for (let i=0;i<data.length;i++){
+        var c = data.charAt(i);
+        if(i == 0){
+            size = parseInt(c,32)
+            continue;
+        }
+        var n = parseInt(c, 16);
+        var posX = (i-1)%size;
+        var posY = Math.floor((i-1)/size);
+        if(n<11){
+            ctx.fillStyle = colors[n];
+            ctx.fillRect(posX+20, posY+20, fieldsize, fieldsize);
+        }
+    }
+}
 draw();
 window.addEventListener('resize', function(event){draw();});
 

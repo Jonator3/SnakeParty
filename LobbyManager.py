@@ -12,7 +12,7 @@ def generateKey():
     while True:
         key = ""
         while len(key) < setup.KEY_LEN:
-            key += random.sample(["0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"])
+            key += random.choice("0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
         if Lobbys.get(key) is None:
             return key
 

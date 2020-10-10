@@ -52,7 +52,7 @@ def websocket_server():
             while True:
                 key = ""
                 while len(key) < setup.KEY_LEN+1:
-                    key += random.sample(["0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"])
+                    key += random.choice("0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
                 if connections.get(key) is None:
                     return key
         id = generateId()
@@ -89,7 +89,7 @@ def send_message(id, str):
 
 
 def on_message(id, msg):
-    return
+    print(id, ">>", msg)
     #TODO
 
 
