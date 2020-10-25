@@ -22,7 +22,10 @@ socket.addEventListener('message', function (event) {
         color = colors[parseInt(event.data.split(":")[1])];
     }if(event.data.startsWith("G:")){
         var data = event.data.split(":")[1];
-
+        drawGame(data);
+    }if(event.data.startsWith("B:")){
+        var data = event.data.split(":")[1];
+        drawBoard(data);
     }
     console.log('server says: ', event.data);});
 
@@ -64,11 +67,34 @@ function draw() {
     var canvasElem = document.getElementById('canvas');
     canvasElem.width = window.innerWidth;
     canvasElem.height = window.innerHeight;
+    var isHorizontal = canvasElem.width > canvasElem.height;
+    var smallside = 0;
+    if(isHorizontal){
+        smallside = canvasElem.height;
+    }else {
+        smallside = canvasElem.width;
+    }
     var ctx = canvasElem.getContext('2d');
-    ctx.fillStyle = color;
-    ctx.fillRect(0, 0, canvasElem.width, canvasElem.height);
     ctx.fillStyle = bk_color;
-    ctx.fillRect(20, 20, canvasElem.width-40, canvasElem.height-40);}
+    ctx.fillRect(0, 0, canvasElem.width, canvasElem.height);
+    ctx.fillStyle = color;
+    ctx.fillRect(0, 0, smallside, smallside);
+    ctx.fillStyle = bk_color;
+    ctx.fillRect(20, 20, smallside-40, smallside-40);}
+function drawBoard(data) {
+    var canvasElem = document.getElementById('canvas');
+    canvasElem.width = window.innerWidth;
+    canvasElem.height = window.innerHeight;
+    var isHorizontal = canvasElem.width > canvasElem.height;
+    var smallside = 0;
+    if(isHorizontal){
+        smallside = canvasElem.height;
+    }else {
+        smallside = canvasElem.width;
+    }
+    var ctx = canvasElem.getContext('2d');
+    //TODO
+}
 function drawGame(data) {
     var canvasElem = document.getElementById('canvas');
     var size = 15;
@@ -83,7 +109,7 @@ function drawGame(data) {
         smallside = canvasElem.width;
     }
     ctx.fillStyle = bk_color;
-    ctx.fillRect(0, 0, canvasElem.width, canvasElem.height);
+    ctx.fillRect(0, 0, smallside, smallside);
     ctx.fillStyle = color;
     ctx.fillRect(0, 0, smallside, smallside);
     for (let i=0;i<data.length;i++){
