@@ -17,20 +17,6 @@ def generateKey():
             return key
 
 
-class Player(object):
-    colour: int
-
-    def __init__(self, client, key: str):
-        self.client = client
-        self.lobby = Lobbys.get(key)
-        if not self.lobby:
-            client.sendError("Lobby not found! key:"+key)
-            return
-        if self.lobby.players.__len__() >= setup.MAX_PLAYERS:
-            client.sendError("Lobby is full!")
-            return
-        self.lobby.players.append(self)
-        self.colour = self.lobby.freeColours()[0]
 
 
 

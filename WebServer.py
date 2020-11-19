@@ -5,7 +5,6 @@ import queue
 import random
 import time
 import setup
-import ClientManager
 
 inc_msgs = queue.Queue()
 outg_msgs = queue.Queue()
@@ -36,7 +35,7 @@ def websocket_server():
             try:
                 await connections[message[0]].send(message[1])
             except Exception:
-                print("Handler Error")
+                print("producer_handler Error!")
 
     def producer():
         buf.put(outg_msgs.get())
@@ -90,20 +89,23 @@ def send_message(id, str):
 
 def on_message(id, msg):
     print(id, ">>", msg)
-    #TODO
+    # TODO
 
 
 def on_connection_open(id):
     print("Someone just connected! id: " + id)
+    # TODO -- Check lobby key and enter
 
 
 def on_connection_close(id):
     print("Someone just disconnected! id: " + id)
+    # TODO -- Disconnect from lobby
 
 
 def S_Loop():
     time.sleep(1)
     while True:
+        time.sleep(0.05)
         check_messages()
 
 
