@@ -2,6 +2,7 @@ import random
 import setup
 from AdvancedTiming import Clock
 import time
+import SharedData as SD
 
 
 class PowerUp(object):
@@ -80,13 +81,12 @@ class Block(object):
 
 class Snake(object):
 
-    def __init__(self, game, index, player):
+    def __init__(self, game, index, player, colour):
         self.player = player
         self.underdog = 1
-        self.name = player.color.name
         self.index = index
         self.game = game
-        self.color = player.color.color
+        self.color = colour
         self.len = 3
         self.movement = [0, 0]
         self.hasMovement = False
@@ -95,9 +95,6 @@ class Snake(object):
         self.score = 0
         self.reset()
         self.resetTag = False
-
-    def getName(self):
-        return self.name
 
     def getPos(self):
         return self.pos
@@ -204,7 +201,8 @@ class Snake(object):
 
 class Game(object):
 
-    def __init__(self, size, length, Players):
+    def __init__(self, size, length, Players, Lobby):
+        self.lobby = Lobby
         self.players = Players
         self.size = size
         self.length = length
@@ -216,7 +214,7 @@ class Game(object):
 
         i = 0
         for P in Players:
-            self.snakes.append(Snake(self, i, P))
+            self.snakes.append(Snake(self, i, SD.client_dict.get(P), Lobby.colours.get(P)))
             i = i+1
 
     def tick(self):

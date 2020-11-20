@@ -5,29 +5,37 @@ import queue
 import random
 import time
 import setup
+import SharedData as SD
 
 inc_msgs = queue.Queue()
 outg_msgs = queue.Queue()
 clsg_cons = queue.Queue()
 opng_cons = queue.Queue()
-lobby_dict = {}
-client_dict = {}
 
 
 class Client(object):
 
     def __init__(self, id: str):
-        self.lastInput = [False, False, False, False]
+        self.lastInput = [False, False, False, False, False]
         self.id = id
-        client_dict[id] = self
+        SD.client_dict[id] = self
 
     def getInput(self):
         temp = self.lastInput
-        self.lastInput = [False, False, False, False]
+        self.lastInput = [False, False, False, False, False]
         return temp
 
     def setInput(self, value):
-        self.lastInput = value
+        if value == "l":
+            self.lastInput = [True, False, False, False, False]
+        if value == "d":
+            self.lastInput = [False, True, False, False, False]
+        if value == "r":
+            self.lastInput = [False, False, True, False, False]
+        if value == "u":
+            self.lastInput = [False, False, False, True, False]
+        if value == "e":
+            self.lastInput = [False, False, False, False, True]
 
 
 def websocket_server():
@@ -107,20 +115,29 @@ def send_message(id, str):
 
 def on_message(id, msg):
     print(id, ">>", msg)
-    # TODO
+
+    if msg.startswith("id:"):
+        key = msg[3:]
+        if SD.client_lobby_dict.get(id):
+            return
+        SD.client_dict.get(id).getInput()
+        SD.client_lobby_dict[id] = key
+    else:
+        SD.client_dict.get(id).setInput(msg)
 
 
 def on_connection_open(id):
     print("Someone just connected! id: " + id)
+    Client(id)
 
 
 def on_connection_close(id):
     print("Someone just disconnected! id: " + id)
 
-    lobby = lobby_dict.get(id)
+    lobby = SD.client_lobby_dict.get(id)
     if lobby:
         lobby.delClient(id)
-        lobby_dict.pop(id)
+        SD.client_lobby_dict.pop(id)
 
 
 def S_Loop():

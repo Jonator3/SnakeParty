@@ -3,9 +3,7 @@ from threading import Thread
 import random
 import setup
 import GameSys
-
-
-Lobbys = {}
+import SharedData as SD
 
 
 def generateKey():
@@ -13,7 +11,7 @@ def generateKey():
         key = ""
         while len(key) < setup.KEY_LEN:
             key += random.choice("0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
-        if Lobbys.get(key) is None:
+        if SD.lobby_dict.get(key) is None:
             return key
 
 
@@ -32,7 +30,7 @@ class Lobby(object):
 
     def __init__(self):
         self.id = generateKey()
-        Lobbys[self.id] = self
+        SD.lobby_dict[self.id] = self
         self.players = []
         self.colours = {}
 
@@ -52,6 +50,6 @@ class Lobby(object):
 
     def loop(self):
         if self.players.__len__() == 0:
-            Lobbys.pop(self.id)
+            SD.lobby_dict.pop(self.id)
             return
         # TODO
