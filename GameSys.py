@@ -3,6 +3,7 @@ import setup
 from AdvancedTiming import Clock
 import time
 import SharedData as SD
+import WebServer
 
 
 class PowerUp(object):

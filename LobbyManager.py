@@ -33,6 +33,8 @@ class Lobby(object):
         SD.lobby_dict[self.id] = self
         self.players = []
         self.colours = {}
+        self.thread = Thread(target=self.loop)
+        self.thread.start()
 
     def getFreeColours(self):
         colours: List[int] = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]

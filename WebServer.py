@@ -7,6 +7,7 @@ import time
 import setup
 import SharedData as SD
 
+
 inc_msgs = queue.Queue()
 outg_msgs = queue.Queue()
 clsg_cons = queue.Queue()
@@ -120,8 +121,12 @@ def on_message(id, msg):
         key = msg[3:]
         if SD.client_lobby_dict.get(id):
             return
+        if key == "host":
+            # TODO
+            return
         SD.client_dict.get(id).getInput()
         SD.client_lobby_dict[id] = key
+        SD.lobby_dict.get(key).addClient(id)
     else:
         SD.client_dict.get(id).setInput(msg)
 
