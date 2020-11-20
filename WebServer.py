@@ -10,6 +10,24 @@ inc_msgs = queue.Queue()
 outg_msgs = queue.Queue()
 clsg_cons = queue.Queue()
 opng_cons = queue.Queue()
+lobby_dict = {}
+client_dict = {}
+
+
+class Client(object):
+
+    def __init__(self, id: str):
+        self.lastInput = [False, False, False, False]
+        self.id = id
+        client_dict[id] = self
+
+    def getInput(self):
+        temp = self.lastInput
+        self.lastInput = [False, False, False, False]
+        return temp
+
+    def setInput(self, value):
+        self.lastInput = value
 
 
 def websocket_server():
@@ -94,12 +112,15 @@ def on_message(id, msg):
 
 def on_connection_open(id):
     print("Someone just connected! id: " + id)
-    # TODO -- Check lobby key and enter
 
 
 def on_connection_close(id):
     print("Someone just disconnected! id: " + id)
-    # TODO -- Disconnect from lobby
+
+    lobby = lobby_dict.get(id)
+    if lobby:
+        lobby.delClient(id)
+        lobby_dict.pop(id)
 
 
 def S_Loop():

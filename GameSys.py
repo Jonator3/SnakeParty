@@ -370,8 +370,7 @@ class Game(object):
         # waits 10sec before Game start (with a timer on Screen)
         while sec > 0:
             self.clock.tick(1000)
-            Window.checkInput()
-            Window.drawWaitScreen(sec)
+            # TODO Window.drawWaitScreen(sec)
             sec = sec-1
 
         # Clears Input before Game start
@@ -387,10 +386,9 @@ class Game(object):
             else:
                 tick = tick+1
 
-
             self.giveInput() # checks input of the Players
             self.move()  # moves the snakes
-            Window.drawGameFrame(self) # sets screen
+            # TODO Window.drawGameFrame(self) # sets screen
             isRunning = self.shouldRun() # checks if game time is over
 
         winner = []
@@ -402,7 +400,7 @@ class Game(object):
             elif P.getScore() == winner[0].getScore():
                 winner.append(P)
 
-        Window.drawEndScreen(self, winner)
+        # TODO Window.drawEndScreen(self, winner)
         Players = setup.Players
         for P in Players:
             P.getController()

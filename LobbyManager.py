@@ -17,13 +17,15 @@ def generateKey():
             return key
 
 
+class LobbyFullError(RuntimeError):
 
+    def __init__(self):
+        super(LobbyFullError, self).__init__("lobby is full")
 
 
 class Lobby(object):
     id: str
-    players: List[object]
-    freeColours: List[int]
+    players: List[str]
     game: GameSys.Game
     playtime: int
     fieldsize: int
@@ -32,18 +34,24 @@ class Lobby(object):
         self.id = generateKey()
         Lobbys[self.id] = self
         self.players = []
+        self.colours = {}
 
-    def freeColours(self):
-        out = range(1, 11)
-        for p in self.players:
-            out.remove(p.colour)
-        return out
+    def getFreeColours(self):
+        colours: List[int] = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+        for c in self.colours:
+            colours.remove(c)
+        return colours
+
+    def addClient(self, id):
+        if len(self.players) >= 10:
+            raise LobbyFullError
+        self.players.append(id)
+
+    def delClient(self, id):
+        self.players.remove(id)
 
     def loop(self):
         if self.players.__len__() == 0:
             Lobbys.pop(self.id)
             return
-        for p in self.players:
-            if p.client is None:
-                self.players.remove(p)
-
+        # TODO
