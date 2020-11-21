@@ -21,11 +21,17 @@ socket.addEventListener('message', function (event) {
     if(event.data.startsWith("C:")){
         color = colors[parseInt(event.data.split(":")[1])];
     }if(event.data.startsWith("G:")){
-        var data = event.data.split(":")[1];
+        var data = event.data.split(":")[1].split(";");
         drawGame(data);
-    }if(event.data.startsWith("B:")){
+    }if(event.data.startsWith("W:")){
         var data = event.data.split(":")[1];
-        drawBoard(data);
+        drawWaitGame(data);
+    }if(event.data.startsWith("M:")){
+        var data = event.data.split(":")[1].split(";");
+        drawMenu(data);
+    }if(event.data.startsWith("E:")){
+        var data = event.data.split(":")[1];
+        drawEndGame(data);
     }
     console.log('server says: ', event.data);});
 
@@ -81,19 +87,14 @@ function draw() {
     ctx.fillRect(0, 0, smallside, smallside);
     ctx.fillStyle = bk_color;
     ctx.fillRect(20, 20, smallside-40, smallside-40);}
-function drawBoard(data) {
-    var canvasElem = document.getElementById('canvas');
-    canvasElem.width = window.innerWidth;
-    canvasElem.height = window.innerHeight;
-    var isHorizontal = canvasElem.width > canvasElem.height;
-    var smallside = 0;
-    if(isHorizontal){
-        smallside = canvasElem.height;
-    }else {
-        smallside = canvasElem.width;
-    }
-    var ctx = canvasElem.getContext('2d');
-    //TODO
+function drawEndGame(data) {
+    // TODO
+}
+function drawWaitGame(data) {
+    // TODO
+}
+function drawMenu(data) {
+    // TODO
 }
 function drawGame(data) {
     var canvasElem = document.getElementById('canvas');
@@ -112,8 +113,8 @@ function drawGame(data) {
     ctx.fillRect(0, 0, smallside, smallside);
     ctx.fillStyle = color;
     ctx.fillRect(0, 0, smallside, smallside);
-    for (let i=0;i<data.length;i++){
-        var c = data.charAt(i);
+    for (let i=0;i<data[0].length;i++){
+        var c = data[0].charAt(i);
         if(i == 0){
             size = parseInt(c,32)
             continue;
@@ -125,6 +126,12 @@ function drawGame(data) {
             ctx.fillStyle = colors[n];
             ctx.fillRect(posX+20, posY+20, fieldsize, fieldsize);
         }
+    }
+    for(let i=1;i<data.length;i++){
+        var d = data[i].split(",");
+        var c = parseInt(d[0], 16);
+        var score = parseInt(d[1], 16);
+        // TODO -- draw board
     }
 }
 draw();

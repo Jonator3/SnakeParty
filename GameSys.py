@@ -423,13 +423,29 @@ def sendGameScreen(game: Game):
         for c in line:
             s += c
         msg += s
+    snakes = game.getSnakes().copy()
+    x = 0
+    while x < len(snakes):
+        y = 1
+        while y < len(snakes):
+            if snakes[y].getScore() > snakes[y - 1].getScore():
+                temp = snakes[y - 1]
+                snakes[y - 1] = snakes[y]
+                snakes[y] = temp
+            y = y + 1
+        x = x + 1
+
+    board = ""
+    for S in snakes:
+        board += ";" + hex(S.getColor()) + "," + hex(S.getScore())
     for C in game.players:
-        WebServer.send_message(C, "G:" + size + msg)
-    # TODO -- send score board
+        WebServer.send_message(C, "G:" + size + msg + board)
+
 
 def sendWaitScreen(game: Game, sec: int):
     for C in game.players:
-        WebServer.send_message(C,"W:" + hex(sec))
+        WebServer.send_message(C, "W:" + hex(sec))
+
 
 def sendEndScreen(game: Game, winner):
     msg = ""
@@ -437,6 +453,7 @@ def sendEndScreen(game: Game, winner):
         msg += hex(w.getColor())
     for C in game.players:
         WebServer.send_message(C, "E:" + msg)
+
 
 def sendMenuScreen(players, freeColours, time, size, host):
     msg = "M:"
