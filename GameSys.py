@@ -404,3 +404,15 @@ class Game(object):
         for P in Players:
             P.getController()
         time.sleep(10)
+
+def sendGameScreen(game: Game):
+    # TODO
+
+def sendWaitScreen(game: Game):
+    # TODO
+
+def sendEndScreen(game: Game):
+    # TODO
+
+def sendMenuScreen(players, freeColours, time, size, host):
+    # TODO
