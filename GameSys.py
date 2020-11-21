@@ -369,7 +369,7 @@ class Game(object):
         # waits 10sec before Game start (with a timer on Screen)
         while sec > 0:
             self.clock.tick(1000)
-            # TODO Window.drawWaitScreen(sec)
+            sendWaitScreen(self, sec)
             sec = sec-1
 
         # Clears Input before Game start
@@ -387,7 +387,7 @@ class Game(object):
 
             self.giveInput() # checks input of the Players
             self.move()  # moves the snakes
-            # TODO Window.drawGameFrame(self) # sets screen
+            sendGameScreen(self)
             isRunning = self.shouldRun() # checks if game time is over
 
         winner = []
@@ -399,20 +399,54 @@ class Game(object):
             elif P.getScore() == winner[0].getScore():
                 winner.append(P)
 
-        # TODO Window.drawEndScreen(self, winner)
-        Players = setup.Players
-        for P in Players:
-            P.getController()
+        sendEndScreen(self, winner)
         time.sleep(10)
 
+def base32char(n: int):
+    return "0123456789abcdefghijklmnopqrstuvwxyz"[n]
+
 def sendGameScreen(game: Game):
-    # TODO
+    size = base32char(game.getSize())
+    screen = []
+    for i in range(game.getSize()):
+        line = []
+        for n in range(game.getSize()):
+            line.append("0")
+        screen.append(line)
+    for S in game.getSnakes():
+        for B in S.getBody():
+            pos = B.getPos()
+            screen[pos[0]][pos[1]] = hex(B.getColor())
+    msg = ""
+    for line in screen:
+        s = ""
+        for c in line:
+            s += c
+        msg += s
+    for C in game.players:
+        WebServer.send_message(C, "G:" + size + msg)
+    # TODO -- send score board
 
-def sendWaitScreen(game: Game):
-    # TODO
+def sendWaitScreen(game: Game, sec: int):
+    for C in game.players:
+        WebServer.send_message(C,"W:" + hex(sec))
 
-def sendEndScreen(game: Game):
-    # TODO
+def sendEndScreen(game: Game, winner):
+    msg = ""
+    for w in winner:
+        msg += hex(w.getColor())
+    for C in game.players:
+        WebServer.send_message(C, "E:" + msg)
 
 def sendMenuScreen(players, freeColours, time, size, host):
-    # TODO
+    msg = "M:"
+    for c in freeColours:
+        msg += hex(c)
+    msg += ";" + hex(time) + ";" + hex(size) + ";"
+    for C in players:
+        h = ""
+        if C == host:
+            h = "1"
+        else:
+            h = "0"
+        WebServer.send_message(C, msg + h)
