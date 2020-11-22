@@ -455,15 +455,19 @@ def sendEndScreen(game: Game, winner):
         WebServer.send_message(C, "E:" + msg)
 
 
-def sendMenuScreen(players, freeColours, time, size, host):
+def sendMenuScreen(lobby):
+    freeColours = lobby.getFreeColours()
+    size = setup.SIZE_SET[lobby.fieldsize]
+    time = lobby.playtime
     msg = "M:"
     for c in freeColours:
         msg += hex(c)
     msg += ";" + hex(time) + ";" + hex(size) + ";"
-    for C in players:
+    for C in lobby.players:
+        pos = lobby.cursors.get(C)
         h = ""
-        if C == host:
+        if C == lobby.players[0]:
             h = "1"
         else:
             h = "0"
-        WebServer.send_message(C, msg + h)
+        WebServer.send_message(C, msg + h + ";" + pos)
