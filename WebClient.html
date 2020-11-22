@@ -9,8 +9,9 @@
 <script>
 
 var id = new URLSearchParams(window.location.search).get('key');
-var colors = ["#555555","#5064FF","#FF8200","#AAFF14","#FF1414","#FAF000","#14FF8C","#FA6496","#FAFAFA","#DC00FA","#00FFC8"];
-var color = colors[0];
+var col_names = ["Blue","Orange","Lime","Red","Yellow","Mint","Pink","White","Purple","Cyan"]
+var colors = ["#5064FF","#FF8200","#AAFF14","#FF1414","#FAF000","#14FF8C","#FA6496","#FAFAFA","#DC00FA","#00FFC8","#555555"];
+var color = colors[10];
 var bk_color = "#333333"
 const socket = new WebSocket('ws://' + location.hostname + ':41800');
 
@@ -88,12 +89,22 @@ function draw() {
     ctx.fillStyle = bk_color;
     ctx.fillRect(20, 20, smallside-40, smallside-40);}
 function drawEndGame(data) {
+    var winner = col_names[parseInt(data,10)];
     // TODO
 }
 function drawWaitGame(data) {
+    var sec = parseInt(data, 16);
     // TODO
 }
 function drawMenu(data) {
+    var freeColours = data[0];
+    var time = data[1] + "min"
+    var size = data[2]
+    var host = false;
+    if (data[3] == "1"){
+        host = true;
+    }
+    var pos = data[4];
     // TODO
 }
 function drawGame(data) {

@@ -462,7 +462,7 @@ def sendMenuScreen(lobby):
     msg = "M:"
     for c in freeColours:
         msg += hex(c)
-    msg += ";" + hex(time) + ";" + hex(size) + ";"
+    msg += ";" + str(time) + ";" + str(size) + ";"
     for C in lobby.players:
         pos = lobby.cursors.get(C)
         h = ""
