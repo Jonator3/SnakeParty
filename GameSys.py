@@ -137,7 +137,7 @@ class Snake(object):
     def giveInput(self):
         input = []
         try:
-            input = SD.client_dict.get(self.player).getInput()
+            input = self.player.getInput()
         except:
             input = [False, False, False, False]
         if self.hasMovement:
@@ -148,9 +148,9 @@ class Snake(object):
                     self.movement = [0, 1]
             if self.movement[0] == 0:
                 if input[1]:
-                    self.movement = [-1, 0]
-                elif input[3]:
                     self.movement = [1, 0]
+                elif input[3]:
+                    self.movement = [-1, 0]
         else:
             if input[0]:
                 self.movement = [0, -1]
@@ -406,11 +406,8 @@ class Game(object):
             SD.client_dict.get(P).getInput()
 
 
-def base32char(n: int):
-    return "0123456789abcdefghijklmnopqrstuvwxyz"[n]
-
 def sendGameScreen(game: Game):
-    size = base32char(game.getSize())
+    size = hex(game.getSize())[2:]
     screen = []
     for i in range(game.getSize()):
         line = []
@@ -441,9 +438,9 @@ def sendGameScreen(game: Game):
 
     board = ""
     for S in snakes:
-        board += ";" + hex(S.getColor())[2:] + "," + hex(S.getScore())[2:]
+        board += "," + hex(S.getColor())[2:] + "." + hex(S.getScore())[2:]
     for C in game.players:
-        WebServer.send_message(C, "G:" + size + msg + board)
+        WebServer.send_message(C, "G:" + msg + ";" + size + ";" + board[1:])
 
 
 def sendWaitScreen(game: Game, sec: int):

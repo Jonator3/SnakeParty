@@ -10,8 +10,8 @@
 
 var id = new URLSearchParams(window.location.search).get('key');
 var col_names = ["Blue","Orange","Lime","Red","Yellow","Mint","Pink","White","Purple","Cyan"]
-var colors = ["#5064FF","#FF8200","#AAFF14","#FF1414","#FAF000","#14FF8C","#FA6496","#FAFAFA","#DC00FA","#00FFC8","#555555"];
-var color = colors[10];
+var colors = ["#5064FF","#FF8200","#AAFF14","#FF1414","#FAF000","#14FF8C","#FA6496","#FAFAFA","#DC00FA","#00FFC8"];
+var color = "#555555";
 var bk_color = "#333333"
 const socket = new WebSocket('ws://' + location.hostname + ':41800');
 
@@ -41,7 +41,6 @@ socket.addEventListener('message', function (event) {
 var bodyElem = document.getElementById('body');
 bodyElem.addEventListener('keypress', function(event) {
     var key = event.keyCode;
-    console.log('key:'+ key);
     if(key==97) {
         socket.send('l');
         console.log('left');}
@@ -91,9 +90,9 @@ function draw() {
     ctx.fillStyle = bk_color;
     ctx.fillRect(20, 20, smallside-40, smallside-40);}
 function drawEndGame(data) {
+    var canvasElem = document.getElementById('canvas');
     var ctx = canvasElem.getContext('2d');
     var winner = col_names[parseInt(data,10)];
-    var canvasElem = document.getElementById('canvas');
     var isHorizontal = canvasElem.width > canvasElem.height;
     var smallside = 0;
     if(isHorizontal){
@@ -104,9 +103,9 @@ function drawEndGame(data) {
     // TODO
 }
 function drawWaitGame(data) {
+    var canvasElem = document.getElementById('canvas');
     var ctx = canvasElem.getContext('2d');
     var sec = parseInt(data, 16);
-    var canvasElem = document.getElementById('canvas');
     var isHorizontal = canvasElem.width > canvasElem.height;
     var smallside = 0;
     if(isHorizontal){
@@ -117,6 +116,7 @@ function drawWaitGame(data) {
     // TODO
 }
 function drawMenu(data) {
+    var canvasElem = document.getElementById('canvas');
     var ctx = canvasElem.getContext('2d');
     var freeColours = data[0];
     var time = data[1] + "min"
@@ -126,7 +126,6 @@ function drawMenu(data) {
         host = true;
     }
     var pos = data[4];
-    var canvasElem = document.getElementById('canvas');
     var scale = 0;
     if(canvasElem.width/2 > canvasElem.height){
         smallside = canvasElem.height;
@@ -136,9 +135,9 @@ function drawMenu(data) {
     // TODO
 }
 function drawGame(data) {
-    var ctx = canvasElem.getContext('2d');
     var canvasElem = document.getElementById('canvas');
-    var size = 15;
+    var ctx = canvasElem.getContext('2d');
+    var size = parseInt(data[1],16);
     var fieldsize = 0;
     var isHorizontal = canvasElem.width > canvasElem.height;
     var smallside = 0;
@@ -149,20 +148,16 @@ function drawGame(data) {
         fieldsize = (canvasElem.width-40)/size;
         smallside = canvasElem.width;
     }
-    ctx.fillStyle = bk_color;
-    ctx.fillRect(0, 0, smallside, smallside);
     ctx.fillStyle = color;
     ctx.fillRect(0, 0, smallside, smallside);
+    ctx.fillStyle = bk_color;
+    ctx.fillRect(20, 20, smallside-40, smallside-40);
     for (let i=0;i<data[0].length;i++){
         var c = data[0].charAt(i);
-        if(i == 0){
-            size = parseInt(c,32)
-            continue;
-        }
         var n = parseInt(c, 16);
-        var posX = (i-1)%size;
-        var posY = Math.floor((i-1)/size);
-        if(n<11){
+        var posX = (i%size)*fieldsize;
+        var posY = Math.floor(i/size)*fieldsize;
+        if(n<colors.length){
             ctx.fillStyle = colors[n];
             ctx.fillRect(posX+20, posY+20, fieldsize, fieldsize);
         }
