@@ -113,7 +113,12 @@ function drawWaitGame(data) {
     }else {
         smallside = canvasElem.width;
     }
-    // TODO
+    ctx.fillStyle = bk_color;
+    ctx.fillRect(0, 0, canvasElem.width, canvasElem.height);
+    ctx.font = "50px Arial";
+
+    ctx.fillStyle = "#555555";
+    ctx.fillText(sec.toString(10), 50, 50);
 }
 function drawMenu(data) {
     var canvasElem = document.getElementById('canvas');
@@ -142,13 +147,13 @@ function drawGame(data) {
     var isHorizontal = canvasElem.width > canvasElem.height;
     var smallside = 0;
     if(isHorizontal){
-        fieldsize = (canvasElem.height-40)/size;
+        fieldsize = Math.floor(((canvasElem.height-40)/size));
         smallside = canvasElem.height;
     }else {
-        fieldsize = (canvasElem.width-40)/size;
+        fieldsize = Math.floor(((canvasElem.width-40)/size));
         smallside = canvasElem.width;
     }
-    ctx.fillStyle = color;
+    ctx.fillStyle = "#000000";
     ctx.fillRect(0, 0, smallside, smallside);
     ctx.fillStyle = bk_color;
     ctx.fillRect(20, 20, smallside-40, smallside-40);
@@ -159,14 +164,23 @@ function drawGame(data) {
         var posY = Math.floor(i/size)*fieldsize;
         if(n<colors.length){
             ctx.fillStyle = colors[n];
-            ctx.fillRect(posX+20, posY+20, fieldsize, fieldsize);
+            ctx.fillRect(posX+20, posY+20, fieldsize+1, fieldsize+1);
         }
     }
-    for(let i=1;i<data.length;i++){
+    for(let i=2;i<data.length;i++){
         var d = data[i].split(",");
         var c = parseInt(d[0], 16);
         var score = parseInt(d[1], 16);
-        // TODO -- draw board
+        var sx = 10;
+        var sy = smallside + 70;
+        if (isHorizontal){
+            sx = smallside + 10;
+            sy = 70;
+        }
+        ctx.font = "25px Arial";
+
+        ctx.fillStyle = colors[c];
+        ctx.fillText(score.toString(10), sx, sy + ((i-2) * 30));
     }
 }
 draw();

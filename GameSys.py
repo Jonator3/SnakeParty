@@ -11,7 +11,7 @@ class PowerUp(object):
     def __init__(self, game):
         self.pos = game.getFreePos()
         self.type = self.getRandomType()
-        self.liveTime = random.randint(10000 / setup.FRAME_TIME, 20000 / setup.FRAME_TIME)
+        self.liveTime = random.randint(10000 // setup.FRAME_TIME, 20000 // setup.FRAME_TIME)
         
     def getRandomType(self):
         X = 0
@@ -156,13 +156,13 @@ class Snake(object):
                 self.movement = [0, -1]
                 self.hasMovement = True
             elif input[1]:
-                self.movement = [-1, 0]
+                self.movement = [1, 0]
                 self.hasMovement = True
             elif input[2]:
                 self.movement = [0, 1]
                 self.hasMovement = True
             elif input[3]:
-                self.movement = [1, 0]
+                self.movement = [-1, 0]
                 self.hasMovement = True
 
     def move(self):
@@ -417,7 +417,12 @@ def sendGameScreen(game: Game):
     for S in game.getSnakes():
         for B in S.getBody():
             pos = B.getPos()
+            if(pos[0] < 0 or pos[1] < 0 or pos[0] >= game.getSize() or pos[1] >= game.getSize()):
+                continue
             screen[pos[0]][pos[1]] = hex(B.getColor())[2:]
+    for item in game.getPowerUps():
+        pos = item.getPos()
+        screen[pos[0]][pos[1]] = "9"
     msg = ""
     for line in screen:
         s = ""
