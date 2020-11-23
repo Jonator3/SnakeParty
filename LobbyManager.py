@@ -71,6 +71,13 @@ def generateKey():
             return key
 
 
+def lobbyCreator(host):
+    return Lobby(host).id
+
+
+SD.lobbyCreator = lobbyCreator
+
+
 class LobbyFullError(RuntimeError):
 
     def __init__(self):
@@ -94,7 +101,6 @@ class Lobby(object):
         self.cursors = {}
         self.addClient(host)
         self.thread.start()
-
 
     def getFreeColours(self):
         colours: List[int] = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]

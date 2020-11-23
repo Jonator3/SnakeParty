@@ -16,11 +16,13 @@ var bk_color = "#333333"
 const socket = new WebSocket('ws://' + location.hostname + ':41800');
 
 socket.addEventListener('open', function (event) {
-    socket.send("id:" + id);});
+    socket.send("K:" + id);});
 
 socket.addEventListener('message', function (event) {
     if(event.data.startsWith("C:")){
         color = colors[parseInt(event.data.split(":")[1])];
+    }if(event.data.startsWith("K:")){
+        id = event.data.split(":")[1];
     }if(event.data.startsWith("G:")){
         var data = event.data.split(":")[1].split(";");
         drawGame(data);
@@ -90,10 +92,26 @@ function draw() {
     ctx.fillRect(20, 20, smallside-40, smallside-40);}
 function drawEndGame(data) {
     var winner = col_names[parseInt(data,10)];
+    var canvasElem = document.getElementById('canvas');
+    var isHorizontal = canvasElem.width > canvasElem.height;
+    var smallside = 0;
+    if(isHorizontal){
+        smallside = canvasElem.height;
+    }else {
+        smallside = canvasElem.width;
+    }
     // TODO
 }
 function drawWaitGame(data) {
     var sec = parseInt(data, 16);
+    var canvasElem = document.getElementById('canvas');
+    var isHorizontal = canvasElem.width > canvasElem.height;
+    var smallside = 0;
+    if(isHorizontal){
+        smallside = canvasElem.height;
+    }else {
+        smallside = canvasElem.width;
+    }
     // TODO
 }
 function drawMenu(data) {
@@ -105,6 +123,13 @@ function drawMenu(data) {
         host = true;
     }
     var pos = data[4];
+    var canvasElem = document.getElementById('canvas');
+    var scale = 0;
+    if(canvasElem.width/2 > canvasElem.height){
+        smallside = canvasElem.height;
+    }else {
+        smallside = canvasElem.width;
+    }
     // TODO
 }
 function drawGame(data) {

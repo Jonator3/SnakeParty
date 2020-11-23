@@ -117,16 +117,23 @@ def send_message(id, str):
 def on_message(id, msg):
     print(id, ">>", msg)
 
-    if msg.startswith("id:"):
+    if msg.startswith("K:"):
         key = msg[3:]
         if SD.client_lobby_dict.get(id):
             return
         if key == "host":
-            # TODO
-            return
-        SD.client_dict.get(id).getInput()
-        SD.client_lobby_dict[id] = key
-        SD.lobby_dict.get(key).addClient(id)
+            key = SD.lobbyCreator(id)
+            SD.client_dict.get(id).getInput()
+            SD.client_lobby_dict[id] = key
+        else:
+            try:
+                SD.lobby_dict.get(key).addClient(id)
+                SD.client_dict.get(id).getInput()
+                SD.client_lobby_dict[id] = key
+            except Exception:
+                SD.client_dict.pop(id)
+                SD.client_lobby_dict.pop(id)
+                send_message(id, "ERROR")
     else:
         SD.client_dict.get(id).setInput(msg)
 
