@@ -137,7 +137,7 @@ class Snake(object):
     def giveInput(self):
         input = []
         try:
-            input = self.player.getInput()
+            input = SD.client_dict.get(self.player).getInput()
         except:
             input = [False, False, False, False]
         if self.hasMovement:
@@ -374,7 +374,7 @@ class Game(object):
 
         # Clears Input before Game start
         for P in self.players:
-            P.getInput()
+            SD.client_dict.get(P).getInput()
 
         # Main Game loop
         while isRunning:
@@ -401,6 +401,10 @@ class Game(object):
 
         sendEndScreen(self, winner)
         time.sleep(10)
+        # Clears Input on Game end
+        for P in self.players:
+            SD.client_dict.get(P).getInput()
+
 
 def base32char(n: int):
     return "0123456789abcdefghijklmnopqrstuvwxyz"[n]
@@ -416,7 +420,7 @@ def sendGameScreen(game: Game):
     for S in game.getSnakes():
         for B in S.getBody():
             pos = B.getPos()
-            screen[pos[0]][pos[1]] = hex(B.getColor()[2:])
+            screen[pos[0]][pos[1]] = hex(B.getColor())[2:]
     msg = ""
     for line in screen:
         s = ""
@@ -437,7 +441,7 @@ def sendGameScreen(game: Game):
 
     board = ""
     for S in snakes:
-        board += ";" + hex(S.getColor())[2:] + "," + hex(S.getScore()[2:])
+        board += ";" + hex(S.getColor())[2:] + "," + hex(S.getScore())[2:]
     for C in game.players:
         WebServer.send_message(C, "G:" + size + msg + board)
 

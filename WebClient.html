@@ -91,6 +91,7 @@ function draw() {
     ctx.fillStyle = bk_color;
     ctx.fillRect(20, 20, smallside-40, smallside-40);}
 function drawEndGame(data) {
+    var ctx = canvasElem.getContext('2d');
     var winner = col_names[parseInt(data,10)];
     var canvasElem = document.getElementById('canvas');
     var isHorizontal = canvasElem.width > canvasElem.height;
@@ -103,6 +104,7 @@ function drawEndGame(data) {
     // TODO
 }
 function drawWaitGame(data) {
+    var ctx = canvasElem.getContext('2d');
     var sec = parseInt(data, 16);
     var canvasElem = document.getElementById('canvas');
     var isHorizontal = canvasElem.width > canvasElem.height;
@@ -115,6 +117,7 @@ function drawWaitGame(data) {
     // TODO
 }
 function drawMenu(data) {
+    var ctx = canvasElem.getContext('2d');
     var freeColours = data[0];
     var time = data[1] + "min"
     var size = data[2]
@@ -133,6 +136,7 @@ function drawMenu(data) {
     // TODO
 }
 function drawGame(data) {
+    var ctx = canvasElem.getContext('2d');
     var canvasElem = document.getElementById('canvas');
     var size = 15;
     var fieldsize = 0;

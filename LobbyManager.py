@@ -156,10 +156,10 @@ class Lobby(object):
                             self.playtime = 1
                     elif pos == "m1":
                         self.fieldsize += 1
-                        if self.fieldsize > len(setup.SIZE_SET):
+                        if self.fieldsize >= len(setup.SIZE_SET):
                             self.fieldsize = 0
                     elif pos == "m2":
-                        GameSys.Game(setup.SIZE_SET[self.fieldsize], self.playtime, self.players, self)
+                        GameSys.Game(setup.SIZE_SET[self.fieldsize], self.playtime, self.players, self).Run()
                 elif input != "":
                     key = input + self.cursors.get(C)
                     print(key, menu_shift_dict.get(key))

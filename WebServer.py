@@ -149,7 +149,6 @@ def on_connection_close(id):
         SD.lobby_dict.get(lobby).delClient(id)
         SD.client_lobby_dict.pop(id)
         SD.client_dict.pop(id)
-        SD.client_lobby_dict.pop(id)
 
 
 def S_Loop():
