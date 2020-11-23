@@ -3,6 +3,8 @@ from threading import Thread
 import random
 import setup
 import GameSys
+import WebServer
+import time
 import SharedData as SD
 
 
@@ -104,15 +106,19 @@ class Lobby(object):
 
     def getFreeColours(self):
         colours: List[int] = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
-        for c in self.colours:
+        for id in self.players:
+            c = self.colours.get(id)
             colours.remove(c)
         return colours
 
     def addClient(self, id):
         if len(self.players) >= 10:
             raise LobbyFullError
-        self.players.append(id)
         self.cursors[id] = "c0"
+        colour = self.getFreeColours()[0]
+        self.colours[id] = colour
+        WebServer.send_message(id, "C:" + hex(colour)[2:])
+        self.players.append(id)
 
     def delClient(self, id):
         self.players.remove(id)
@@ -137,15 +143,13 @@ class Lobby(object):
                     input = "u"
                 if inp[4]:
                     input = "e"
-                if input != "e":
-                    key = input + self.cursors.get(C)
-                    self.cursors[C] = menu_shift_dict.get(key)
-                else:
+                if input == "e":
                     pos = self.cursors.get(C)
                     if pos.startswith("c"):
                         c = int(pos[1], 10)
                         if self.getFreeColours().__contains__(c):
                             self.colours[C] = c
+                            WebServer.send_message(C, "C:" + hex(c)[2:])
                     elif pos == "m0":
                         self.playtime += 1
                         if self.playtime > setup.MAX_LEN:
@@ -156,4 +160,9 @@ class Lobby(object):
                             self.fieldsize = 0
                     elif pos == "m2":
                         GameSys.Game(setup.SIZE_SET[self.fieldsize], self.playtime, self.players, self)
+                elif input != "":
+                    key = input + self.cursors.get(C)
+                    print(key, menu_shift_dict.get(key))
+                    self.cursors[C] = menu_shift_dict.get(key)
                 GameSys.sendMenuScreen(self)
+                time.sleep(0.2)

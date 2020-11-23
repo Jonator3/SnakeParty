@@ -118,7 +118,7 @@ def on_message(id, msg):
     print(id, ">>", msg)
 
     if msg.startswith("K:"):
-        key = msg[3:]
+        key = msg[2:]
         if SD.client_lobby_dict.get(id):
             return
         if key == "host":
@@ -131,8 +131,6 @@ def on_message(id, msg):
                 SD.client_dict.get(id).getInput()
                 SD.client_lobby_dict[id] = key
             except Exception:
-                SD.client_dict.pop(id)
-                SD.client_lobby_dict.pop(id)
                 send_message(id, "ERROR")
     else:
         SD.client_dict.get(id).setInput(msg)
@@ -148,7 +146,9 @@ def on_connection_close(id):
 
     lobby = SD.client_lobby_dict.get(id)
     if lobby:
-        lobby.delClient(id)
+        SD.lobby_dict.get(lobby).delClient(id)
+        SD.client_lobby_dict.pop(id)
+        SD.client_dict.pop(id)
         SD.client_lobby_dict.pop(id)
 
 
@@ -166,3 +166,4 @@ def start_server():
     l.start()
 
 
+start_server()

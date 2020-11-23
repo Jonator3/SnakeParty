@@ -411,12 +411,12 @@ def sendGameScreen(game: Game):
     for i in range(game.getSize()):
         line = []
         for n in range(game.getSize()):
-            line.append("0")
+            line.append("a")
         screen.append(line)
     for S in game.getSnakes():
         for B in S.getBody():
             pos = B.getPos()
-            screen[pos[0]][pos[1]] = hex(B.getColor())
+            screen[pos[0]][pos[1]] = hex(B.getColor()[2:])
     msg = ""
     for line in screen:
         s = ""
@@ -437,20 +437,20 @@ def sendGameScreen(game: Game):
 
     board = ""
     for S in snakes:
-        board += ";" + hex(S.getColor()) + "," + hex(S.getScore())
+        board += ";" + hex(S.getColor())[2:] + "," + hex(S.getScore()[2:])
     for C in game.players:
         WebServer.send_message(C, "G:" + size + msg + board)
 
 
 def sendWaitScreen(game: Game, sec: int):
     for C in game.players:
-        WebServer.send_message(C, "W:" + hex(sec))
+        WebServer.send_message(C, "W:" + hex(sec)[2:])
 
 
 def sendEndScreen(game: Game, winner):
     msg = ""
     for w in winner:
-        msg += hex(w.getColor())
+        msg += hex(w.getColor())[2:]
     for C in game.players:
         WebServer.send_message(C, "E:" + msg)
 
@@ -461,13 +461,18 @@ def sendMenuScreen(lobby):
     time = lobby.playtime
     msg = "M:"
     for c in freeColours:
-        msg += hex(c)
+        msg += hex(c)[2:]
     msg += ";" + str(time) + ";" + str(size) + ";"
     for C in lobby.players:
         pos = lobby.cursors.get(C)
+        if pos is None:
+            pos = "c0"
+            lobby.cursors[C] = "c0"
+            print("Why is it None?")
         h = ""
         if C == lobby.players[0]:
             h = "1"
         else:
             h = "0"
+        msg2 = h + ";" + pos
         WebServer.send_message(C, msg + h + ";" + pos)
