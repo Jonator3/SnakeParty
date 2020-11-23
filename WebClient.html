@@ -153,6 +153,8 @@ function drawGame(data) {
         fieldsize = Math.floor(((canvasElem.width-40)/size));
         smallside = canvasElem.width;
     }
+    ctx.fillStyle = bk_color;
+    ctx.fillRect(0, 0, canvasElem.width, canvasElem.height);
     ctx.fillStyle = "#000000";
     ctx.fillRect(0, 0, smallside, smallside);
     ctx.fillStyle = bk_color;

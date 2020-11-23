@@ -379,11 +379,10 @@ class Game(object):
         # Main Game loop
         while isRunning:
             self.clock.tick(setup.FRAME_TIME)
-            if tick >= setup.FRAME_TIME: # Time system for the Game Clock
+            if tick >= 1000: # Time system for the Game Clock
                 self.tick()
-                tick = 0
-            else:
-                tick = tick+1
+                tick -= 1000
+            tick += setup.FRAME_TIME
 
             self.giveInput() # checks input of the Players
             self.move()  # moves the snakes
@@ -443,9 +442,9 @@ def sendGameScreen(game: Game):
 
     board = ""
     for S in snakes:
-        board += "," + hex(S.getColor())[2:] + "." + hex(S.getScore())[2:]
+        board += ";" + hex(S.getColor())[2:] + "," + hex(S.getScore())[2:]
     for C in game.players:
-        WebServer.send_message(C, "G:" + msg + ";" + size + ";" + board[1:])
+        WebServer.send_message(C, "G:" + msg + ";" + size + board)
 
 
 def sendWaitScreen(game: Game, sec: int):
