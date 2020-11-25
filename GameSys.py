@@ -407,27 +407,18 @@ class Game(object):
 
 def sendGameScreen(game: Game):
     size = hex(game.getSize())[2:]
-    screen = []
-    for i in range(game.getSize()):
-        line = []
-        for n in range(game.getSize()):
-            line.append("a")
-        screen.append(line)
+    msg = ""
     for S in game.getSnakes():
         for B in S.getBody():
             pos = B.getPos()
             if(pos[0] < 0 or pos[1] < 0 or pos[0] >= game.getSize() or pos[1] >= game.getSize()):
                 continue
-            screen[pos[0]][pos[1]] = hex(B.getColor())[2:]
+            msg += "," + hex(B.getColor())[2:] + "." + hex(pos[1])[2:] + "." + hex(pos[0])[2:]
+    msg = msg[1:]
     for item in game.getPowerUps():
         pos = item.getPos()
-        screen[pos[0]][pos[1]] = "9"
-    msg = ""
-    for line in screen:
-        s = ""
-        for c in line:
-            s += c
-        msg += s
+        sprite = "9"
+        msg += "," + sprite + "." + hex(pos[1])[2:] + "." + hex(pos[0])[2:]
     snakes = game.getSnakes().copy()
     x = 0
     while x < len(snakes):
@@ -445,19 +436,20 @@ def sendGameScreen(game: Game):
         board += ";" + hex(S.getColor())[2:] + "," + hex(S.getScore())[2:]
     for C in game.players:
         WebServer.send_message(C, "G:" + msg + ";" + size + board)
+        WebServer.send_message(C,"")
 
 
 def sendWaitScreen(game: Game, sec: int):
     for C in game.players:
         WebServer.send_message(C, "W:" + hex(sec)[2:])
+        WebServer.send_message(C,"")
 
 
 def sendEndScreen(game: Game, winner):
-    msg = ""
-    for w in winner:
-        msg += hex(w.getColor())[2:]
+    msg = hex(winner[0].getColor())[2:]
     for C in game.players:
         WebServer.send_message(C, "E:" + msg)
+        WebServer.send_message(C,"")
 
 
 def sendMenuScreen(lobby):
@@ -481,3 +473,4 @@ def sendMenuScreen(lobby):
             h = "0"
         msg2 = h + ";" + pos
         WebServer.send_message(C, msg + h + ";" + pos)
+        WebServer.send_message(C,"")

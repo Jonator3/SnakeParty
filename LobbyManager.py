@@ -94,6 +94,7 @@ class Lobby(object):
 
     def __init__(self, host):
         self.id = generateKey()
+        print(self.id, "lobby opened")
         SD.lobby_dict[self.id] = self
         self.fieldsize = setup.DEF_SIZE
         self.playtime = setup.DEF_LEN
@@ -119,16 +120,19 @@ class Lobby(object):
         self.colours[id] = colour
         WebServer.send_message(id, "C:" + hex(colour)[2:])
         self.players.append(id)
+        print(self.id, "player joined", id)
 
     def delClient(self, id):
         self.players.remove(id)
         self.colours.pop(id)
         self.cursors.pop(id)
+        print(self.id, "player left", id)
 
     def loop(self):
         while 1:
             if self.players.__len__() == 0:
                 SD.lobby_dict.pop(self.id)
+                print(self.id, "lobby closed")
                 return
             for C in self.players:
                 inp = SD.client_dict.get(C).getInput()
@@ -162,7 +166,6 @@ class Lobby(object):
                         GameSys.Game(setup.SIZE_SET[self.fieldsize], self.playtime, self.players, self).Run()
                 elif input != "":
                     key = input + self.cursors.get(C)
-                    print(key, menu_shift_dict.get(key))
                     self.cursors[C] = menu_shift_dict.get(key)
                 GameSys.sendMenuScreen(self)
                 time.sleep(0.2)

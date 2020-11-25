@@ -115,8 +115,6 @@ def send_message(id, str):
 
 
 def on_message(id, msg):
-    print(id, ">>", msg)
-
     if msg.startswith("K:"):
         key = msg[2:]
         if SD.client_lobby_dict.get(id):
