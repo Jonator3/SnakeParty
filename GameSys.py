@@ -208,7 +208,6 @@ class Game(object):
         self.size = size
         self.length = length
         self.time_sec = 0
-        self.time_min = 0
         self.power_ups = []
         self.snakes = []
         self.clock = Clock()
@@ -220,15 +219,6 @@ class Game(object):
 
     def tick(self):
         self.time_sec = self.time_sec + 1
-        if self.time_sec > 59:
-            self.time_sec = 0
-            self.time_min = self.time_min + 1
-
-    def time(self):
-        if self.time_sec < 10:
-            return str(self.time_min) + ":0" + str(self.time_sec)
-        else:
-            return str(self.time_min) + ":" + str(self.time_sec)
 
     def getFreePos(self):
         flag = True
@@ -355,22 +345,23 @@ class Game(object):
                         S.setLen(1000)
 
     def shouldRun(self):
-        if self.time_min >= self.length:
-            print("Game ended by Time")
+        if self.time_sec >= self.length * 60:
+            print(self.lobby.id, "Game ended")
             return False
         else:
             return True
 
     def Run(self):
+        print(self.lobby.id, "Game started")
         isRunning = True
         tick = 0
         sec = 5
 
-        # waits 10sec before Game start (with a timer on Screen)
+        # waits before Game start
         while sec > 0:
-            self.clock.tick(1000)
             sendWaitScreen(self, sec)
             sec = sec-1
+            self.clock.tick(1000)
 
         # Clears Input before Game start
         for P in self.players:
@@ -379,7 +370,8 @@ class Game(object):
         # Main Game loop
         while isRunning:
             self.clock.tick(setup.FRAME_TIME)
-            if tick >= 1000: # Time system for the Game Clock
+            # Time system for the Game Clock
+            if tick >= 1000:
                 self.tick()
                 tick -= 1000
             tick += setup.FRAME_TIME
@@ -398,8 +390,10 @@ class Game(object):
             elif P.getScore() == winner[0].getScore():
                 winner.append(P)
 
-        sendEndScreen(self, winner)
-        time.sleep(10)
+        self.clock.tick(setup.FRAME_TIME)
+        for i in range(5):
+            sendEndScreen(self, winner)
+            time.sleep(1)
         # Clears Input on Game end
         for P in self.players:
             SD.client_dict.get(P).getInput()
@@ -407,6 +401,7 @@ class Game(object):
 
 def sendGameScreen(game: Game):
     size = hex(game.getSize())[2:]
+    time = hex((game.length * 60) - (game.time_sec + 1))[2:]
     msg = ""
     for S in game.getSnakes():
         for B in S.getBody():
@@ -435,7 +430,7 @@ def sendGameScreen(game: Game):
     for S in snakes:
         board += ";" + hex(S.getColor())[2:] + "," + hex(S.getScore())[2:]
     for C in game.players:
-        WebServer.send_message(C, "G:" + msg + ";" + size + board)
+        WebServer.send_message(C, "G:" + msg + ";" + size + ";" + time + board)
         WebServer.send_message(C,"")
 
 

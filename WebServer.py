@@ -116,7 +116,7 @@ def send_message(id, str):
 
 def on_message(id, msg):
     if msg.startswith("K:"):
-        key = msg[2:]
+        key = msg[2:].lower()
         if SD.client_lobby_dict.get(id):
             return
         if key == "host":

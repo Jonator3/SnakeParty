@@ -68,7 +68,7 @@ def generateKey():
     while True:
         key = ""
         while len(key) < setup.KEY_LEN:
-            key += random.choice("0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
+            key += random.choice("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ")
         if SD.lobby_dict.get(key) is None:
             return key
 
@@ -164,6 +164,8 @@ class Lobby(object):
                             self.fieldsize = 0
                     elif pos == "m2":
                         GameSys.Game(setup.SIZE_SET[self.fieldsize], self.playtime, self.players, self).Run()
+                        for id in self.players:
+                            self.cursors[id] = "c0"
                 elif input != "":
                     key = input + self.cursors.get(C)
                     self.cursors[C] = menu_shift_dict.get(key)

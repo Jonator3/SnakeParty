@@ -9,8 +9,8 @@
 <script>
 
 var id = new URLSearchParams(window.location.search).get('key');
-var col_names = ["Blue","Orange","Lime","Red","Yellow","Mint","Pink","White","Purple","Cyan"]
-var colors = ["#5064FF","#FF8200","#AAFF14","#FF1414","#FAF000","#14FF8C","#FA6496","#FAFAFA","#DC00FA","#00FFC8"];
+var col_names = ["Blue","Orange","Lime","Red","Yellow","Green","Pink","White","Purple","Cyan"]
+var colors = ["#5064FF","#FF8200","#AAFF24","#FF1414","#FAF000","#00A300","#FA6496","#FAFAFA","#DC00FA","#00FFC8"];
 var color = "#555555";
 var bk_color = "#333333"
 const socket = new WebSocket('ws://' + location.hostname + ':41800');
@@ -75,20 +75,9 @@ function draw() {
     var canvasElem = document.getElementById('canvas');
     canvasElem.width = window.innerWidth;
     canvasElem.height = window.innerHeight;
-    var isHorizontal = canvasElem.width > canvasElem.height;
-    var smallside = 0;
-    if(isHorizontal){
-        smallside = canvasElem.height;
-    }else {
-        smallside = canvasElem.width;
-    }
     var ctx = canvasElem.getContext('2d');
     ctx.fillStyle = bk_color;
-    ctx.fillRect(0, 0, canvasElem.width, canvasElem.height);
-    ctx.fillStyle = color;
-    ctx.fillRect(0, 0, smallside, smallside);
-    ctx.fillStyle = bk_color;
-    ctx.fillRect(20, 20, smallside-40, smallside-40);}
+    ctx.fillRect(0, 0, canvasElem.width, canvasElem.height);}
 function drawEndGame(data) {
     var canvasElem = document.getElementById('canvas');
     var ctx = canvasElem.getContext('2d');
@@ -129,6 +118,14 @@ function drawWaitGame(data) {
     ctx.fillStyle = "#555555";
     ctx.fillText(sec.toString(10), 50, smallside-50);
 }
+function contains(S,n){
+    for(let i=0;i < S.length;i++){
+        if(n == S.charAt(i)) {
+            return true;
+        }
+    }
+    return false;
+}
 function drawMenu(data) {
     var canvasElem = document.getElementById('canvas');
     var ctx = canvasElem.getContext('2d');
@@ -137,14 +134,36 @@ function drawMenu(data) {
     var size = data[2]
     var host = false;
     if (data[3] == "1"){
-        host = true;
-    }
+        host = true;}
+    var isHorizontal = canvasElem.width > canvasElem.height;
     var pos = data[4];
-    var scale = 0;
-    if(canvasElem.width/2 > canvasElem.height){
-        smallside = canvasElem.height;
-    }else {
-        smallside = canvasElem.width;
+
+    var Fscale = Math.floor(Math.min(canvasElem.height/7, canvasElem.width/20));
+    ctx.font = Fscale.toString(10) + "px Arial";
+    ctx.fillStyle = bk_color;
+    ctx.fillRect(0, 0, canvasElem.width, canvasElem.height);
+    var Cscale = Math.floor(Math.min(canvasElem.height/5, canvasElem.width/6));
+    var CCscale = Cscale + (Cscale/3) - 20;
+    var space = Cscale/6;
+    if (pos.startsWith("c")){
+        var n = parseInt(pos.charAt(1),10);
+        var x = n % 5;
+        var y = 0;
+        if(n >= 5){y = 1;}
+
+        ctx.fillStyle = color;
+        ctx.fillRect((Cscale * x) + (space * x) + 10, (Cscale * y) + (space * y) + 10, CCscale, CCscale);
+    }
+    for(let i=0; i < colors.length;i++){
+        var x = i % 5;
+        var y = 0;
+        if(i >= 5){y = 1;}
+        var col = "#555555"
+        if(contains(freeColours,i)){
+            col = colors[i];
+        }
+        ctx.fillStyle = col;
+        ctx.fillRect((Cscale * x) + (space * (x+1)), (Cscale * y) + (space * (y+1)), Cscale, Cscale);
     }
     // TODO
 }
@@ -152,18 +171,31 @@ function drawGame(data) {
     var canvasElem = document.getElementById('canvas');
     var ctx = canvasElem.getContext('2d');
     var size = parseInt(data[1],16);
-    var fieldsize = 0;
+    var time = parseInt(data[2],16);
+    var min = Math.floor(time/60);
+    var sec = time % 60;
+    var timeS = min.toString(10) + ":";
+    if (sec < 10){
+        timeS += "0" + sec.toString(10)
+    }else {
+        timeS += sec.toString(10)
+    }
     var isHorizontal = canvasElem.width > canvasElem.height;
+    var squr = 2.0;
     var smallside = 0;
     if(isHorizontal){
-        fieldsize = (canvasElem.height)/size;
+        squr = canvasElem.width/canvasElem.height;
         smallside = canvasElem.height;
     }else {
-        fieldsize = (canvasElem.width)/size;
         smallside = canvasElem.width;
+        squr = canvasElem.height/canvasElem.width;
+    }if (squr < 1.2){
+        smallside *= (0.8+(squr - 1));
     }
+    var fieldsize = smallside/size;
     ctx.fillStyle = bk_color;
     ctx.fillRect(0, 0, canvasElem.width, canvasElem.height);
+    ctx.fillStyle = "#444444";
     ctx.fillRect(0, 0, smallside, smallside);
     var screenData = data[0].split(",")
     for (let i=0;i<screenData.length;i++){
@@ -176,20 +208,22 @@ function drawGame(data) {
             ctx.fillRect(posX, posY, fieldsize+1, fieldsize+1);
         }
     }
-    for(let i=2;i<data.length;i++){
+    ctx.font = "40px Arial";
+    ctx.fillStyle = "#DDDDDD";
+    var sx = 10;
+    var sy = smallside + 45;
+    if (isHorizontal){
+        sx = smallside + 10;
+        sy = 45;
+    }
+    ctx.fillText(timeS, sx, sy);
+    ctx.font = "30px Arial";
+    for(let i=3;i<data.length;i++){
         var d = data[i].split(",");
         var c = parseInt(d[0], 16);
         var score = parseInt(d[1], 16);
-        var sx = 10;
-        var sy = smallside + 70;
-        if (isHorizontal){
-            sx = smallside + 10;
-            sy = 70;
-        }
-        ctx.font = "25px Arial";
-
         ctx.fillStyle = colors[c];
-        ctx.fillText(score.toString(10), sx, sy + ((i-2) * 30));
+        ctx.fillText(score.toString(10), sx, sy + 40 + ((i-3) * 30));
     }
 }
 draw();
