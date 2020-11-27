@@ -68,7 +68,7 @@ def generateKey():
     while True:
         key = ""
         while len(key) < setup.KEY_LEN:
-            key += random.choice("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ")
+            key += random.choice("0123456789abcdefghijklmnopqrstuvwxyz")
         if SD.lobby_dict.get(key) is None:
             return key
 
@@ -119,6 +119,7 @@ class Lobby(object):
         colour = self.getFreeColours()[0]
         self.colours[id] = colour
         WebServer.send_message(id, "C:" + hex(colour)[2:])
+        WebServer.send_message(id, "K:" + self.id)
         self.players.append(id)
         print(self.id, "player joined", id)
 
@@ -154,15 +155,15 @@ class Lobby(object):
                         if self.getFreeColours().__contains__(c):
                             self.colours[C] = c
                             WebServer.send_message(C, "C:" + hex(c)[2:])
-                    elif pos == "m0":
+                    elif pos == "m0" and C == self.players[0]:
                         self.playtime += 1
                         if self.playtime > setup.MAX_LEN:
                             self.playtime = 1
-                    elif pos == "m1":
+                    elif pos == "m1" and C == self.players[0]:
                         self.fieldsize += 1
                         if self.fieldsize >= len(setup.SIZE_SET):
                             self.fieldsize = 0
-                    elif pos == "m2":
+                    elif pos == "m2" and C == self.players[0]:
                         GameSys.Game(setup.SIZE_SET[self.fieldsize], self.playtime, self.players, self).Run()
                         for id in self.players:
                             self.cursors[id] = "c0"

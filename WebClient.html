@@ -138,21 +138,25 @@ function drawMenu(data) {
     var isHorizontal = canvasElem.width > canvasElem.height;
     var pos = data[4];
 
-    var Fscale = Math.floor(Math.min(canvasElem.height/7, canvasElem.width/20));
+    var Cscale = Math.floor(Math.min(canvasElem.height/4, canvasElem.width/6));
+    var CCscale = Cscale + (Cscale/5);
+    var Fscale = Math.floor(Math.min((canvasElem.height-(2*CCscale))/2.3, ((6*Cscale)-100)/9));
     ctx.font = Fscale.toString(10) + "px Arial";
     ctx.fillStyle = bk_color;
     ctx.fillRect(0, 0, canvasElem.width, canvasElem.height);
-    var Cscale = Math.floor(Math.min(canvasElem.height/5, canvasElem.width/6));
-    var CCscale = Cscale + (Cscale/3) - 20;
     var space = Cscale/6;
+    ctx.fillStyle = color;
     if (pos.startsWith("c")){
         var n = parseInt(pos.charAt(1),10);
         var x = n % 5;
         var y = 0;
         if(n >= 5){y = 1;}
 
-        ctx.fillStyle = color;
-        ctx.fillRect((Cscale * x) + (space * x) + 10, (Cscale * y) + (space * y) + 10, CCscale, CCscale);
+        ctx.fillRect((Cscale * x) + (space * (x+1)) - (CCscale-Cscale)/2, (Cscale * y) + (space * (y+1)) - (CCscale-Cscale)/2, CCscale, CCscale);
+    }if(pos.startsWith("m")){
+        var n = parseInt(pos.charAt(1),10);
+        var over = Fscale/5;
+        ctx.fillRect(30+(Fscale*3*n)+(20*n)-over, 2*CCscale-over+Fscale/3, (Fscale*3)+(2*over), Fscale*1.3+(2*over));
     }
     for(let i=0; i < colors.length;i++){
         var x = i % 5;
@@ -165,7 +169,18 @@ function drawMenu(data) {
         ctx.fillStyle = col;
         ctx.fillRect((Cscale * x) + (space * (x+1)), (Cscale * y) + (space * (y+1)), Cscale, Cscale);
     }
-    // TODO
+    ctx.fillStyle = "#555555";
+    if (host) {ctx.fillStyle = "#9a6526";}
+    ctx.fillRect(30, 2*CCscale + Fscale/3, Fscale*3, Fscale*1.3);
+    ctx.fillRect(50+(Fscale*3), 2*CCscale + Fscale/3, Fscale*3, Fscale*1.3);
+    ctx.fillRect(70+(Fscale*6), 2*CCscale + Fscale/3, Fscale*3, Fscale*1.3);
+
+    ctx.fillStyle = "#DDDDDD";
+    ctx.fillText(time, 35, (2*CCscale)+Fscale + Fscale/3);
+    ctx.fillText(size, 55+(Fscale*3), (2*CCscale)+Fscale + Fscale/3);
+    ctx.fillText("Start", 75+(Fscale*6), (2*CCscale)+Fscale + Fscale/3);
+    ctx.fillStyle = "#777777";
+    ctx.fillText("Lobby Key: " + id.toUpperCase(), 20, canvasElem.height-15);
 }
 function drawGame(data) {
     var canvasElem = document.getElementById('canvas');

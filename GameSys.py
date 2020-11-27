@@ -368,7 +368,7 @@ class Game(object):
             SD.client_dict.get(P).getInput()
 
         # Main Game loop
-        while isRunning:
+        while self.shouldRun():  # ends when time is over
             self.clock.tick(setup.FRAME_TIME)
             # Time system for the Game Clock
             if tick >= 1000:
@@ -376,13 +376,13 @@ class Game(object):
                 tick -= 1000
             tick += setup.FRAME_TIME
 
-            self.giveInput() # checks input of the Players
-            self.move()  # moves the snakes
+            self.giveInput()    # checks input of the Players
+            self.move()         # moves the snakes
             sendGameScreen(self)
-            isRunning = self.shouldRun() # checks if game time is over
+            if len(self.lobby.players) == 0:
+                return
 
-        winner = []
-        winner.append(self.snakes[0])
+        winner = [self.snakes[0]]
         for P in self.snakes[1:]:
             if P.getScore() > winner[0].getScore():
                 winner.clear()
@@ -400,7 +400,7 @@ class Game(object):
 
 
 def sendGameScreen(game: Game):
-    size = hex(game.getSize())[2:]
+    size = str(game.getSize())
     time = hex((game.length * 60) - (game.time_sec + 1))[2:]
     msg = ""
     for S in game.getSnakes():
