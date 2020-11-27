@@ -87,10 +87,6 @@ class LobbyFullError(RuntimeError):
 
 
 class Lobby(object):
-    id: str
-    players: List[str]
-    playtime: int
-    fieldsize: int
 
     def __init__(self, host):
         self.id = generateKey()
