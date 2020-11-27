@@ -102,7 +102,7 @@ class Lobby(object):
         self.thread.start()
 
     def getFreeColours(self):
-        colours: List[int] = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+        colours = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
         for id in self.players:
             c = self.colours.get(id)
             colours.remove(c)
