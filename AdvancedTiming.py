@@ -2,7 +2,6 @@ from datetime import datetime
 import time
 
 class Clock(object):
-    lastTick: datetime
 
     def __init__(self):
         self.lastTick = datetime.now()
