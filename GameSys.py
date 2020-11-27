@@ -400,7 +400,7 @@ class Game(object):
 
 
 def sendGameScreen(game: Game):
-    size = str(game.getSize())
+    size = hex(game.getSize())[2:]
     time = hex((game.length * 60) - (game.time_sec + 1))[2:]
     msg = ""
     for S in game.getSnakes():
