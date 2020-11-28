@@ -6,6 +6,7 @@ import GameSys
 import WebServer
 import time
 import SharedData as SD
+from Logger import logged_print as print
 
 
 menu_shift_dict = {

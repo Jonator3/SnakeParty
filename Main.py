@@ -1,4 +1,5 @@
-import LobbyManager
-import sys
 
-print("SnakeParty Server is running")
+from Logger import logged_print as print
+import LobbyManager
+
+print("SnakeParty Server started")

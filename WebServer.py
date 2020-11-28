@@ -6,6 +6,7 @@ import random
 import time
 import setup
 import SharedData as SD
+from Logger import logged_print as print
 
 
 inc_msgs = queue.Queue()

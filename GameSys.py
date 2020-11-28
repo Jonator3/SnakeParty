@@ -4,6 +4,7 @@ from AdvancedTiming import Clock
 import time
 import SharedData as SD
 import WebServer
+from Logger import logged_print as print
 
 
 class PowerUp(object):
