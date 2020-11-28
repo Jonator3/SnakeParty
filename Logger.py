@@ -1,5 +1,11 @@
 from datetime import datetime
-LogFile = open(datetime.now().strftime("Logs/%b-%y/%d-%a.log"), "w+")
+import os
+
+
+time = datetime.now()
+os.mkdir(time.strftime("Logs/%b-%y"))
+LogFile = open(time.strftime("Logs/%b-%y/%d-%a.log"), "w+")
+
 
 def logged_print(*args):
     s = datetime.now().strftime("%X| ")
