@@ -10,7 +10,7 @@
 
 var id = new URLSearchParams(window.location.search).get('key');
 var col_names = ["Blue","Orange","Lime","Red","Yellow","Green","Pink","White","Purple","Cyan"]
-var colors = ["#5064FF","#FF8200","#AAFF24","#FF1414","#FAF000","#00A300","#FA6496","#FAFAFA","#DC00FA","#00FFC8"];
+var colors = ["#5064FF","#FF8200","#AAFF24","#FF1414","#FAF000","#00A300","#FA6496","#FAFAFA","#DC00FA","#00FFC8","#009300","#b38d0c","#AA0000","#0000AA","#22FF22"];
 var color = "#555555";
 var bk_color = "#333333"
 const socket = new WebSocket('ws://' + location.hostname + ':41800');
@@ -74,10 +74,7 @@ bodyElem.addEventListener('touchstart', function(event) {
 function draw() {
     var canvasElem = document.getElementById('canvas');
     canvasElem.width = window.innerWidth;
-    canvasElem.height = window.innerHeight;
-    var ctx = canvasElem.getContext('2d');
-    ctx.fillStyle = bk_color;
-    ctx.fillRect(0, 0, canvasElem.width, canvasElem.height);}
+    canvasElem.height = window.innerHeight;}
 function drawEndGame(data) {
     var canvasElem = document.getElementById('canvas');
     var ctx = canvasElem.getContext('2d');
@@ -92,13 +89,15 @@ function drawEndGame(data) {
     }
     ctx.fillStyle = bk_color;
     ctx.fillRect(0, 0, canvasElem.width, canvasElem.height);
-    ctx.font = Math.floor(smallside / 2.0).toString() + "px Arial";
+    var Fscale = Math.floor(Math.min(canvasElem.height/2.3, canvasElem.width/6 ));
+    ctx.font = Fscale.toString(10) + "px Arial";
+    var pre = Math.floor((canvasElem.height - Fscale*2.3)/2);
 
     ctx.fillStyle = wc;
-    ctx.fillText(winner, 50, smallside/2-20);
-    ctx.font = Math.floor(smallside / 3.7).toString() + "px Arial";
+    ctx.fillText(winner, Fscale, Fscale*1.1 + pre);
+    ctx.font = Math.floor(Fscale * 0.65).toString() + "px Arial";
     ctx.fillStyle = "#555555";
-    ctx.fillText("Won the Game!", 50, smallside-70);
+    ctx.fillText("Won the Game!", Fscale, Fscale * 2.2 + pre);
 }
 function drawWaitGame(data) {
     var canvasElem = document.getElementById('canvas');
@@ -140,7 +139,7 @@ function drawMenu(data) {
 
     var Cscale = Math.floor(Math.min(canvasElem.height/4, canvasElem.width/6));
     var CCscale = Cscale + (Cscale/5);
-    var Fscale = Math.floor(Math.min((canvasElem.height-(2*CCscale))/2.3, ((6*Cscale)-100)/9));
+    var Fscale = Math.floor(Math.min((canvasElem.height-(2*CCscale))/2.6, ((6*Cscale)-100)/9));
     ctx.font = Fscale.toString(10) + "px Arial";
     ctx.fillStyle = bk_color;
     ctx.fillRect(0, 0, canvasElem.width, canvasElem.height);
@@ -155,10 +154,10 @@ function drawMenu(data) {
         ctx.fillRect((Cscale * x) + (space * (x+1)) - (CCscale-Cscale)/2, (Cscale * y) + (space * (y+1)) - (CCscale-Cscale)/2, CCscale, CCscale);
     }if(pos.startsWith("m")){
         var n = parseInt(pos.charAt(1),10);
-        var over = Fscale/5;
+        var over = Math.min(Fscale/5, 15);
         ctx.fillRect(30+(Fscale*3*n)+(20*n)-over, 2*CCscale-over+Fscale/3, (Fscale*3)+(2*over), Fscale*1.3+(2*over));
     }
-    for(let i=0; i < colors.length;i++){
+    for(let i=0; i < 10;i++){
         var x = i % 5;
         var y = 0;
         if(i >= 5){y = 1;}
@@ -176,9 +175,9 @@ function drawMenu(data) {
     ctx.fillRect(70+(Fscale*6), 2*CCscale + Fscale/3, Fscale*3, Fscale*1.3);
 
     ctx.fillStyle = "#DDDDDD";
-    ctx.fillText(time, 35, (2*CCscale)+Fscale + Fscale/3);
-    ctx.fillText(size, 55+(Fscale*3), (2*CCscale)+Fscale + Fscale/3);
-    ctx.fillText("Start", 75+(Fscale*6), (2*CCscale)+Fscale + Fscale/3);
+    ctx.fillText(time, 40, (2*CCscale)+Fscale + Fscale/3);
+    ctx.fillText(size + "x" + size, 60+(Fscale*3), (2*CCscale)+Fscale + Fscale/3);
+    ctx.fillText("Start", 80+(Fscale*6), (2*CCscale)+Fscale + Fscale/3);
     ctx.fillStyle = "#777777";
     ctx.fillText("Lobby Key: " + id.toUpperCase(), 20, canvasElem.height-15);
 }
@@ -218,9 +217,14 @@ function drawGame(data) {
         var n = parseInt(sd[0], 16);
         var posX = Math.floor(parseInt(sd[1],16)*fieldsize);
         var posY = Math.floor(parseInt(sd[2],16)*fieldsize);
-        if(n < colors.length){
+        if(n < 10){
             ctx.fillStyle = colors[n];
             ctx.fillRect(posX, posY, fieldsize+1, fieldsize+1);
+        }else{
+            ctx.fillStyle = colors[n];
+            ctx.fillRect(posX + (fieldsize*0.07), posY + (fieldsize*0.07), fieldsize  - (fieldsize*0.14), fieldsize  - (fieldsize*0.14));
+            ctx.fillStyle = colors[14];
+            ctx.fillRect(posX + (fieldsize*0.2), posY + (fieldsize*0.2), fieldsize  - (fieldsize*0.4), fieldsize  - (fieldsize*0.4));
         }
     }
     ctx.font = "40px Arial";

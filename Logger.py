@@ -13,9 +13,9 @@ def start():
 
 
 def logged_print(*args):
-    s = datetime.now().strftime("%X| ")
+    s = datetime.now().strftime("%X|")
     for arg in args:
-        s += str(arg)
+        s += " " + str(arg)
     if LogFile:
         LogFile.write(s)
     print(s)

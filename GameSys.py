@@ -33,16 +33,14 @@ class PowerUp(object):
         return self.type
 
     def getColor(self):
-        if self.type == "DEF":
-            return [0, 160, 0]
-        elif self.type == "INF_LEN":
-            return [160, 0, 0]
+        if self.type == "INF_LEN":
+            return "c"
         elif self.type == "GOLD":
-            return [150, 130, 0]
+            return "b"
         elif self.type == "SHORT":
-            return [0, 0, 150]
+            return "d"
         else:
-            return [0, 160, 0]
+            return "a"
 
     def liveTick(self):
         self.liveTime = self.liveTime-1
@@ -413,7 +411,7 @@ def sendGameScreen(game: Game):
     msg = msg[1:]
     for item in game.getPowerUps():
         pos = item.getPos()
-        sprite = "9"
+        sprite = item.getColor()
         msg += "," + sprite + "." + hex(pos[1])[2:] + "." + hex(pos[0])[2:]
     snakes = game.getSnakes().copy()
     x = 0
