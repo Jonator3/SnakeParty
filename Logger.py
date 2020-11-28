@@ -3,6 +3,7 @@ import os
 
 
 time = datetime.now()
+os.mkdir("Logs")
 os.mkdir(time.strftime("Logs/%b-%y"))
 LogFile = open(time.strftime("Logs/%b-%y/%d-%a.log"), "w+")
 
