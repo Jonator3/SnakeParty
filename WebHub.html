@@ -4,10 +4,12 @@
     <meta charset="UTF-8">
     <title>Snake Party</title>
 </head>
-<body style="background-color: #333333">
-<input id="myInput" type="text" style="left:50%;top:50%;position:absolute;width:200px;height: 30px;margin-top: -15px;margin-left:-100px;"/>
-<button style="color: #DDDDDD;background-color: #555555;left:50%;top:50%;position:absolute;width:90px;height: 30px;margin-top: 30px;margin-left:-100px;" onclick="hostGame();">Host</button>
-<button style="color: #DDDDDD;background-color: #555555;left:50%;top:50%;position:absolute;width:90px;height: 30px;margin-top: 30px;margin-left:20px;" onclick="joinGame();">join</button>
+<body style="background-color: #333333;min-height: 300px">
+    <label style="color: #DDDDDD;background-color: #333333;left:50%;top: 30%;position:absolute;height: 30px;margin-top: -40px;margin-left:-90px;">Lobby Key:</label>
+    <input id="myInput" type="text" style="text-align: center;left:50%;top:30%;position:absolute;width:200px;height: 30px;margin-top: -15px;margin-left:-100px;"/>
+    <button style="color: #DDDDDD;background-color: #555555;left:50%;top:30%;position:absolute;width:210px;height: 30px;margin-top: 27px;margin-left:-100px;" onclick="joinGame();">join Lobby</button>
+    <button style="color: #DDDDDD;background-color: #555555;left:50%;top:30%;position:absolute;width:210px;height: 30px;margin-top: 70px;margin-left:-100px;" onclick="hostGame();">Host Lobby</button>
+    <label style="color: #888888;background-color: #333333;left:50%;top: 100%;position:absolute;height: 30px;margin-top: -40px;margin-left:-150px;">made by Jonator3: https://github.com/Jonator3</label>
 <script>
     function hostGame(){
         location.href = 'http://' + location.hostname + '/game.html?key=host';
@@ -16,7 +18,6 @@
         var key = document.getElementById("myInput").value;
         location.href = 'http://' + location.hostname + '/game.html?key=' + key;
     }
-
 </script>
 </body>
 </html>
