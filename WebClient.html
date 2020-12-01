@@ -39,21 +39,21 @@ socket.addEventListener('message', function (event) {
         console.log('server says: ', event.data);}});
 
 var bodyElem = document.getElementById('body');
-bodyElem.addEventListener('keypress', function(event) {
-    var key = event.keyCode;
-    if(key==97) {
+bodyElem.addEventListener('keydown', function(event) {
+    var key = event.key;
+    if(key==="a"||key==="ArrowLeft") {
         socket.send('l');
         console.log('left');}
-    if(key==119){
+    if(key==="w"||key==="ArrowUp"){
         socket.send('u');
         console.log('up');}
-    if(key==100){
+    if(key==="d"||key==="ArrowRight"){
         socket.send('r');
         console.log('right');}
-    if(key==13){
+    if(key==="Enter"){
         socket.send('e');
         console.log('enter');}
-    if(key==115 ){
+    if(key==="s"||key==="ArrowDown" ){
         socket.send('d');
         console.log('down');}}, false);
 bodyElem.addEventListener('touchstart', function(event) {
