@@ -4,7 +4,19 @@
     <meta charset="UTF-8">
     <title>Snake Party</title>
 </head>
-<body>
+<body style="background-color: #333333">
+<input id="myInput" type="text" style="left:50%;top:50%;position:absolute;width:200px;height: 30px;margin-top: -15px;margin-left:-100px;"/>
+<button style="color: #DDDDDD;background-color: #555555;left:50%;top:50%;position:absolute;width:90px;height: 30px;margin-top: 30px;margin-left:-100px;" onclick="hostGame();">Host</button>
+<button style="color: #DDDDDD;background-color: #555555;left:50%;top:50%;position:absolute;width:90px;height: 30px;margin-top: 30px;margin-left:20px;" onclick="joinGame();">join</button>
+<script>
+    function hostGame(){
+        location.href = 'http://' + location.hostname + '/game.html?key=host';
+    }
+    function joinGame(){
+        var key = document.getElementById("myInput").value;
+        location.href = 'http://' + location.hostname + '/game.html?key=' + key;
+    }
 
+</script>
 </body>
 </html>
