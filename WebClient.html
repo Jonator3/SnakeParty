@@ -17,8 +17,17 @@ const socket = new WebSocket('ws://' + location.hostname + ':41800');
 
 socket.addEventListener('open', function (event) {
     socket.send("K:" + id);});
+socket.addEventListener('close', function (event) {
+    console.log("Connection closed!");
+    drawError("Connection Lost!");
+    setTimeout(() => {  location.href = 'http://' + location.hostname; }, 7000);
+});
 
 socket.addEventListener('message', function (event) {
+    if(event.data === "NoLobby"){
+        drawError("Lobby " + id + " not Found!")
+        setTimeout(() => {  location.href = 'http://' + location.hostname; }, 7000);
+    }
     if(event.data.startsWith("C:")){
         color = colors[parseInt(event.data.split(":")[1])];
     }if(event.data.startsWith("K:")){
@@ -74,7 +83,24 @@ bodyElem.addEventListener('touchstart', function(event) {
 function draw() {
     var canvasElem = document.getElementById('canvas');
     canvasElem.width = window.innerWidth;
-    canvasElem.height = window.innerHeight;}
+    canvasElem.height = window.innerHeight;
+    var ctx = canvasElem.getContext('2d');
+    ctx.fillStyle = bk_color;
+    ctx.fillRect(0, 0, canvasElem.width, canvasElem.height);}
+function drawError(msg) {
+    msg = "Error: " + msg;
+    var canvasElem = document.getElementById('canvas');
+    canvasElem.width = window.innerWidth;
+    canvasElem.height = window.innerHeight;
+    var ctx = canvasElem.getContext('2d');
+    ctx.fillStyle = bk_color;
+    ctx.fillRect(0, 0, canvasElem.width, canvasElem.height);
+    var Fscale = Math.floor(Math.min(canvasElem.height/3, canvasElem.width/((msg.length/1.8)+2) ));
+    ctx.font = Fscale.toString(10) + "px Arial";
+    var pre = Math.floor((canvasElem.height - Fscale*2.3)/2);
+
+    ctx.fillStyle = "#FF0000";
+    ctx.fillText(msg, Fscale, ((canvasElem.height-Fscale)/2)+Fscale);}
 function drawEndGame(data) {
     var canvasElem = document.getElementById('canvas');
     var ctx = canvasElem.getContext('2d');

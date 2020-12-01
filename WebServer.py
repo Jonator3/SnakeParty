@@ -130,7 +130,7 @@ def on_message(id, msg):
                 SD.client_dict.get(id).getInput()
                 SD.client_lobby_dict[id] = key
             except Exception:
-                send_message(id, "ERROR")
+                send_message(id, "NoLobby")
     else:
         SD.client_dict.get(id).setInput(msg)
 
