@@ -5,6 +5,7 @@ import setup
 import GameSys
 import WebServer
 import time
+import queue
 import SharedData as SD
 from Logger import logged_print as print
 
@@ -69,7 +70,7 @@ def generateKey():
     while True:
         key = ""
         while len(key) < setup.KEY_LEN:
-            key += random.choice("0123456789abcdefghijklmnopqrstuvwxyz")
+            key += random.choice("123456789abcdefghjklmnpqrstuvwxyz")
         if SD.lobby_dict.get(key) is None:
             return key
 
@@ -90,6 +91,7 @@ class LobbyFullError(RuntimeError):
 class Lobby(object):
 
     def __init__(self, host):
+        self.mouseInput = queue.Queue(10)
         self.id = generateKey()
         print(self.id, "lobby opened")
         SD.lobby_dict[self.id] = self
@@ -125,6 +127,10 @@ class Lobby(object):
         self.colours.pop(id)
         self.cursors.pop(id)
         print(self.id, "player left", id)
+
+    def clientMouseInput(self, player, pos):
+        print("received")
+        self.mouseInput.put_nowait((player, pos))
 
     def loop(self):
         while 1:
@@ -162,10 +168,37 @@ class Lobby(object):
                             self.fieldsize = 0
                     elif pos == "m2" and C == self.players[0]:
                         GameSys.Game(setup.SIZE_SET[self.fieldsize], self.playtime, self.players, self).Run()
+                        while self.mouseInput.qsize() > 0:
+                            self.mouseInput.get_nowait()
                         for id in self.players:
                             self.cursors[id] = "c0"
                 elif input != "":
                     key = input + self.cursors.get(C)
                     self.cursors[C] = menu_shift_dict.get(key)
                 GameSys.sendMenuScreen(self)
-                time.sleep(0.2)
+            while self.mouseInput.qsize() > 0:
+                player, pos = self.mouseInput.get_nowait()
+                print("parsing", player, pos)
+                if player is None:
+                    break
+                self.cursors[player] = pos
+                if pos.startswith("c"):
+                    c = int(pos[1], 10)
+                    if self.getFreeColours().__contains__(c):
+                        self.colours[C] = c
+                        WebServer.send_message(C, "C:" + hex(c)[2:])
+                elif pos == "m0" and C == self.players[0]:
+                    self.playtime += 1
+                    if self.playtime > setup.MAX_LEN:
+                        self.playtime = 1
+                elif pos == "m1" and C == self.players[0]:
+                    self.fieldsize += 1
+                    if self.fieldsize >= len(setup.SIZE_SET):
+                        self.fieldsize = 0
+                elif pos == "m2" and C == self.players[0]:
+                    GameSys.Game(setup.SIZE_SET[self.fieldsize], self.playtime, self.players, self).Run()
+                    while self.mouseInput.qsize() > 0:
+                        self.mouseInput.get_nowait()
+                    for id in self.players:
+                        self.cursors[id] = "c0"
+            time.sleep(0.2)

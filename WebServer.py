@@ -115,24 +115,27 @@ def send_message(id, str):
     outg_msgs.put((id, str))
 
 
-def on_message(id, msg):
+def on_message(cid, msg):
     if msg.startswith("K:"):
         key = msg[2:].lower()
-        if SD.client_lobby_dict.get(id):
+        if SD.client_lobby_dict.get(cid):
             return
         if key == "host":
-            key = SD.lobbyCreator(id)
-            SD.client_dict.get(id).getInput()
-            SD.client_lobby_dict[id] = key
+            key = SD.lobbyCreator(cid)
+            SD.client_dict.get(cid).getInput()
+            SD.client_lobby_dict[cid] = key
         else:
             try:
-                SD.lobby_dict.get(key).addClient(id)
-                SD.client_dict.get(id).getInput()
-                SD.client_lobby_dict[id] = key
+                SD.lobby_dict.get(key).addClient(cid)
+                SD.client_dict.get(cid).getInput()
+                SD.client_lobby_dict[cid] = key
             except Exception:
-                send_message(id, "NoLobby")
+                send_message(cid, "NoLobby")
+    elif msg.startswith("C:"):
+        print(cid, msg)
+        SD.lobby_dict.get(SD.client_lobby_dict.get(cid)).clientMouseInput(cid, msg[2:])
     else:
-        SD.client_dict.get(id).setInput(msg)
+        SD.client_dict.get(cid).setInput(msg)
 
 
 def on_connection_open(id):

@@ -279,7 +279,6 @@ class Game(object):
 
         for P in self.snakes:
             if P.isOut():
-                print("Reset: Hit Boarder")
                 P.setReset()
                 for S in self.snakes:
                     if S != P:
@@ -290,7 +289,6 @@ class Game(object):
                     if p == P:
                         for i in p.getBody()[:-2]:
                             if i.getPos() == pos:
-                                print("Reset: Hit Himself")
                                 P.setReset()
                                 for S in self.snakes:
                                     if S != P:
@@ -298,7 +296,6 @@ class Game(object):
                     else:
                         for i in p.getBody():
                             if i.getPos() == P.getPos():
-                                print("Reset: Hit Other Player")
                                 P.setReset()
                                 for S in self.snakes:
                                     if S != P:
