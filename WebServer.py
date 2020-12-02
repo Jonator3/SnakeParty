@@ -126,7 +126,11 @@ def on_message(cid, msg):
             SD.client_lobby_dict[cid] = key
         else:
             try:
-                SD.lobby_dict.get(key).addClient(cid)
+                lobby = SD.lobby_dict.get(key)
+                if lobby is None:
+                    send_message(cid, "NoLobby")
+                    return
+                lobby.addClient(cid)
                 SD.client_dict.get(cid).getInput()
                 SD.client_lobby_dict[cid] = key
             except Exception:
