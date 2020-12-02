@@ -136,7 +136,6 @@ def on_message(cid, msg):
             except Exception:
                 send_message(cid, "NoLobby")
     elif msg.startswith("C:"):
-        print(cid, msg)
         SD.lobby_dict.get(SD.client_lobby_dict.get(cid)).clientMouseInput(cid, msg[2:])
     else:
         SD.client_dict.get(cid).setInput(msg)

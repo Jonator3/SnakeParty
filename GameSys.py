@@ -400,11 +400,21 @@ def sendGameScreen(game: Game):
     time = hex((game.length * 60) - (game.time_sec + 1))[2:]
     msg = ""
     for S in game.getSnakes():
+        assembly = []
         for B in S.getBody():
             pos = B.getPos()
             if(pos[0] < 0 or pos[1] < 0 or pos[0] >= game.getSize() or pos[1] >= game.getSize()):
                 continue
-            msg += "," + hex(B.getColor())[2:] + "." + hex(pos[1])[2:] + "." + hex(pos[0])[2:]
+            if len(assembly) == 0:
+                assembly.append([B.getColor(), pos[1], pos[0], 1, 1])
+            elif assembly[-1][1] == pos[1] and assembly[-1][4] == 1:
+                assembly[-1] = [B.getColor(), pos[1], min(pos[0], assembly[-1][2]), assembly[-1][3]+1, 1]
+            elif assembly[-1][2] == pos[0] and assembly[-1][3] == 1:
+                assembly[-1] = [B.getColor(), min(pos[1], assembly[-1][1]), pos[0], 1, assembly[-1][4]+1]
+            else:
+                assembly.append([B.getColor(), pos[1], pos[0], 1, 1])
+        for ass in assembly:
+            msg += "," + hex(ass[0])[2:] + "." + hex(ass[1])[2:] + "." + hex(ass[2])[2:] + "." + hex(ass[3])[2:] + "." + hex(ass[4])[2:]
     msg = msg[1:]
     for item in game.getPowerUps():
         pos = item.getPos()

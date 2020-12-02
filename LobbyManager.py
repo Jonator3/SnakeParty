@@ -129,7 +129,6 @@ class Lobby(object):
         print(self.id, "player left", id)
 
     def clientMouseInput(self, player, pos):
-        print("received")
         self.mouseInput.put_nowait((player, pos))
 
     def loop(self):
@@ -178,7 +177,6 @@ class Lobby(object):
                 GameSys.sendMenuScreen(self)
             while self.mouseInput.qsize() > 0:
                 player, pos = self.mouseInput.get_nowait()
-                print("parsing", player, pos)
                 if player is None:
                     break
                 self.cursors[player] = pos

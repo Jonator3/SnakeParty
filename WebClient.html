@@ -6,7 +6,7 @@
 </head>
 <body id='body'>
 <canvas id='canvas'></canvas>
-<label id='invitelink' style="font-size: 10px;color: #333333;background-color: #333333;left:0%;top: 0%;position:absolute;height: 30px;margin-top: -40px;margin-left:0px;"></label>
+<label id='invitelink' style="font-family: Arial;font-size: 10px;color: #333333;background-color: #333333;left:0%;top: 0%;position:absolute;height: 30px;margin-top: -40px;margin-left:0px;"></label>
 <script>
 
 var id = new URLSearchParams(window.location.search).get('key');
@@ -24,7 +24,7 @@ socket.addEventListener('open', function (event) {
 socket.addEventListener('close', function (event) {
     console.log("Connection closed!");
     drawError("Connection Lost!");
-    setTimeout(() => {  location.href = 'http://' + location.hostname; }, 5000);
+    //setTimeout(() => {  location.href = 'http://' + location.hostname; }, 5000);
 });
 
 socket.addEventListener('message', function (event) {
@@ -124,7 +124,7 @@ bodyElem.addEventListener('touchstart', function(event) {
 function draw() {
     lastFrame = "None";
     var label = document.getElementById("invitelink");
-    label.style = "font-size: 10px;color: #777777;background-color: #333333;left:0%;top: 0%;position:absolute;height: 15px;margin-top: -30";
+    label.style = "font-family: Arial;font-size: 10px;color: #777777;background-color: #333333;left:0%;top: 0%;position:absolute;height: 15px;margin-top: -30";
     var canvasElem = document.getElementById('canvas');
     canvasElem.width = window.innerWidth;
     canvasElem.height = window.innerHeight;
@@ -134,7 +134,7 @@ function draw() {
 function drawError(msg) {
     lastFrame = "Err";
     var label = document.getElementById("invitelink");
-    label.style = "font-size: 10px;color: #777777;background-color: #333333;left:0%;top: 0%;position:absolute;height: 15px;margin-top: -30";
+    label.style = "font-family: Arial;font-size: 10px;color: #777777;background-color: #333333;left:0%;top: 0%;position:absolute;height: 15px;margin-top: -30";
     msg = "Error: " + msg;
     var canvasElem = document.getElementById('canvas');
     canvasElem.width = window.innerWidth;
@@ -151,7 +151,7 @@ function drawError(msg) {
 function drawEndGame(data) {
     lastFrame = "End";
     var label = document.getElementById("invitelink");
-    label.style = "font-size: 10px;color: #777777;background-color: #333333;left:0%;top: 0%;position:absolute;height: 15px;margin-top: -30";
+    label.style = "font-family: Arial;font-size: 10px;color: #777777;background-color: #333333;left:0%;top: 0%;position:absolute;height: 15px;margin-top: -30";
     var canvasElem = document.getElementById('canvas');
     var ctx = canvasElem.getContext('2d');
     var wc = colors[parseInt(data,10)];
@@ -178,7 +178,7 @@ function drawEndGame(data) {
 function drawWaitGame(data) {
     lastFrame = "Wait";
     var label = document.getElementById("invitelink");
-    label.style = "font-size: 10px;color: #777777;background-color: #333333;left:0%;top: 0%;position:absolute;height: 15px;margin-top: -30";
+    label.style = "font-family: Arial;font-size: 10px;color: #777777;background-color: #333333;left:0%;top: 0%;position:absolute;height: 15px;margin-top: -30";
     var canvasElem = document.getElementById('canvas');
     var ctx = canvasElem.getContext('2d');
     var sec = parseInt(data, 16);
@@ -261,12 +261,12 @@ function drawMenu(data) {
     //ctx.fillStyle = "#777777";
     //ctx.fillText("Lobby Key: " + id.toUpperCase(), 20, canvasElem.height-15);
     var label = document.getElementById("invitelink");
-    label.style = "font-size: "+Fscale.toString(10)+"px;color: #777777;background-color: #333333;left:0%;top: 100%;position:absolute;height: "+Fscale.toString(10)+"px;margin-top: -"+Math.floor(Fscale*1.3).toString(10)+"px;margin-left: "+space.toString(10)+"px";
+    label.style = "font-family: Arial;font-size: "+Fscale.toString(10)+"px;color: #777777;background-color: #333333;left:0%;top: 100%;position:absolute;height: "+Fscale.toString(10)+"px;margin-top: -"+Math.floor(Fscale*1.3).toString(10)+"px;margin-left: "+space.toString(10)+"px";
 }
 function drawGame(data) {
     lastFrame = "Game";
     var label = document.getElementById("invitelink");
-    label.style = "font-size: 10px;color: #777777;background-color: #333333;left:0%;top: 0%;position:absolute;height: 15px;margin-top: -30";
+    label.style = "font-family: Arial;font-size: 10px;color: #777777;background-color: #333333;left:0%;top: 0%;position:absolute;height: 15px;margin-top: -30";
 
     var canvasElem = document.getElementById('canvas');
     var ctx = canvasElem.getContext('2d');
@@ -303,9 +303,11 @@ function drawGame(data) {
         var n = parseInt(sd[0], 16);
         var posX = Math.floor(parseInt(sd[1],16)*fieldsize);
         var posY = Math.floor(parseInt(sd[2],16)*fieldsize);
+        var sizeX = Math.floor(parseInt(sd[4],16)*fieldsize);
+        var sizeY = Math.floor(parseInt(sd[3],16)*fieldsize);
         if(n < 10){
             ctx.fillStyle = colors[n];
-            ctx.fillRect(posX, posY, fieldsize+1, fieldsize+1);
+            ctx.fillRect(posX, posY, sizeX+1, sizeY+1);
         }else{
             ctx.fillStyle = colors[n];
             ctx.fillRect(posX + (fieldsize*0.07), posY + (fieldsize*0.07), fieldsize  - (fieldsize*0.14), fieldsize  - (fieldsize*0.14));
