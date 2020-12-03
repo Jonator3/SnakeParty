@@ -183,17 +183,17 @@ class Lobby(object):
                 if pos.startswith("c"):
                     c = int(pos[1], 10)
                     if self.getFreeColours().__contains__(c):
-                        self.colours[C] = c
-                        WebServer.send_message(C, "C:" + hex(c)[2:])
-                elif pos == "m0" and C == self.players[0]:
+                        self.colours[player] = c
+                        WebServer.send_message(player, "C:" + hex(c)[2:])
+                elif pos == "m0" and player == self.players[0]:
                     self.playtime += 1
                     if self.playtime > setup.MAX_LEN:
                         self.playtime = 1
-                elif pos == "m1" and C == self.players[0]:
+                elif pos == "m1" and player == self.players[0]:
                     self.fieldsize += 1
                     if self.fieldsize >= len(setup.SIZE_SET):
                         self.fieldsize = 0
-                elif pos == "m2" and C == self.players[0]:
+                elif pos == "m2" and player == self.players[0]:
                     GameSys.Game(setup.SIZE_SET[self.fieldsize], self.playtime, self.players, self).Run()
                     while self.mouseInput.qsize() > 0:
                         self.mouseInput.get_nowait()
