@@ -1,4 +1,3 @@
-from typing import List
 from threading import Thread
 import random
 import setup
@@ -131,6 +130,27 @@ class Lobby(object):
     def clientMouseInput(self, player, pos):
         self.mouseInput.put_nowait((player, pos))
 
+    def handelEnter(self, player, pos):
+        if pos.startswith("c"):
+            c = int(pos[1], 10)
+            if self.getFreeColours().__contains__(c):
+                self.colours[player] = c
+                WebServer.send_message(player, "C:" + hex(c)[2:])
+        elif pos == "m0" and player == self.players[0]:
+            self.playtime += 1
+            if self.playtime > setup.MAX_LEN:
+                self.playtime = 1
+        elif pos == "m1" and player == self.players[0]:
+            self.fieldsize += 1
+            if self.fieldsize >= len(setup.SIZE_SET):
+                self.fieldsize = 0
+        elif pos == "m2" and player == self.players[0]:
+            GameSys.Game(setup.SIZE_SET[self.fieldsize], self.playtime, self.players, self).Run()
+            while self.mouseInput.qsize() > 0:
+                self.mouseInput.get_nowait()
+            for id in self.players:
+                self.cursors[id] = "c0"
+
     def loop(self):
         while 1:
             if self.players.__len__() == 0:
@@ -152,25 +172,7 @@ class Lobby(object):
                     input = "e"
                 if input == "e":
                     pos = self.cursors.get(C)
-                    if pos.startswith("c"):
-                        c = int(pos[1], 10)
-                        if self.getFreeColours().__contains__(c):
-                            self.colours[C] = c
-                            WebServer.send_message(C, "C:" + hex(c)[2:])
-                    elif pos == "m0" and C == self.players[0]:
-                        self.playtime += 1
-                        if self.playtime > setup.MAX_LEN:
-                            self.playtime = 1
-                    elif pos == "m1" and C == self.players[0]:
-                        self.fieldsize += 1
-                        if self.fieldsize >= len(setup.SIZE_SET):
-                            self.fieldsize = 0
-                    elif pos == "m2" and C == self.players[0]:
-                        GameSys.Game(setup.SIZE_SET[self.fieldsize], self.playtime, self.players, self).Run()
-                        while self.mouseInput.qsize() > 0:
-                            self.mouseInput.get_nowait()
-                        for id in self.players:
-                            self.cursors[id] = "c0"
+                    self.handelEnter(C, pos)
                 elif input != "":
                     key = input + self.cursors.get(C)
                     self.cursors[C] = menu_shift_dict.get(key)
@@ -180,23 +182,5 @@ class Lobby(object):
                 if player is None:
                     break
                 self.cursors[player] = pos
-                if pos.startswith("c"):
-                    c = int(pos[1], 10)
-                    if self.getFreeColours().__contains__(c):
-                        self.colours[player] = c
-                        WebServer.send_message(player, "C:" + hex(c)[2:])
-                elif pos == "m0" and player == self.players[0]:
-                    self.playtime += 1
-                    if self.playtime > setup.MAX_LEN:
-                        self.playtime = 1
-                elif pos == "m1" and player == self.players[0]:
-                    self.fieldsize += 1
-                    if self.fieldsize >= len(setup.SIZE_SET):
-                        self.fieldsize = 0
-                elif pos == "m2" and player == self.players[0]:
-                    GameSys.Game(setup.SIZE_SET[self.fieldsize], self.playtime, self.players, self).Run()
-                    while self.mouseInput.qsize() > 0:
-                        self.mouseInput.get_nowait()
-                    for id in self.players:
-                        self.cursors[id] = "c0"
+                self.handelEnter(player, pos)
             time.sleep(0.2)
