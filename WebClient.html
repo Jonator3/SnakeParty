@@ -24,7 +24,7 @@ socket.addEventListener('open', function (event) {
 socket.addEventListener('close', function (event) {
     console.log("Connection closed!");
     drawError("Connection Lost!");
-    //setTimeout(() => {  location.href = 'http://' + location.hostname; }, 5000);
+    setTimeout(() => {  location.href = 'http://' + location.hostname; }, 5000);
 });
 
 socket.addEventListener('message', function (event) {
