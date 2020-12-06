@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Resource Monitor</title>
+</head>
+<body>
+<article id="text">hello<br>world</article>
+</body>
+<script>
+    const socket = new WebSocket('ws://' + location.hostname + ':41801');
+
+socket.onmessage = function (event) {
+    console.log("a");
+    console.log("received: ", event.data);
+    document.getElementById("text").innerHTML = event.data;
+    };
+console.log("loaded")
+
+</script>
+</html>
