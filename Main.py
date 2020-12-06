@@ -8,7 +8,7 @@ import LobbyManager
 
 
 def resource_str():
-    msg = "CPU:<br><br>"
+    msg = datetime.now().strftime("%c:<br><br>CPU:<br><br>")
     msg += "  cores:      " + str(psutil.cpu_count(False)) + "<br>"
     msg += "  usage:      " + str(round(psutil.cpu_percent(1))) + "%<br>"
     msg += "  frequency:  " + str(round(psutil.cpu_freq().current/1000, 1)) + "GHz<br><br>"
