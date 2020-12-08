@@ -8,14 +8,13 @@ import LobbyManager
 
 
 def resource_str():
-    msg = datetime.now().strftime("%c:<br><br>CPU:<br><br>")
-    msg += "  cores:      " + str(psutil.cpu_count(False)) + "<br>"
-    msg += "  usage:      " + str(round(psutil.cpu_percent(1))) + "%<br>"
-    msg += "  frequency:  " + str(round(psutil.cpu_freq().current/1000, 1)) + "GHz<br><br>"
-    msg += "RAM:<br><br>"
+    msg = datetime.now().strftime('<span style="font-size: 20px">%c:<br><br>CPU:</span><br>')
+    msg += '<span style="color: #FFFFFF">..</span>cores:<span style="color: #AAAAAA">.......</span>' + str(psutil.cpu_count(False)) + '<br>'
+    msg += '<span style="color: #FFFFFF">..</span>usage:<span style="color: #AAAAAA">.......</span>' + str(round(psutil.cpu_percent(1))) + '%<br>'
+    msg += '<span style="font-size: 20px"><br>RAM:</span><br>'
     ram = psutil.virtual_memory()
-    msg += "  usage:      " + str(round(ram.percent)) + "%<br>"
-    msg += "  total:      " + str(round(ram.total/(1024**2))) + "MB"
+    msg += '<span style="color: #FFFFFF">..</span>usage:<span style="color: #AAAAAA">.......</span>' + str(round(ram.percent)) + '%<br>'
+    msg += '<span style="color: #FFFFFF">..</span>total:<span style="color: #AAAAAA">.......</span>' + str(round(ram.total/(1024**2))) + 'MB'
     return msg
 
 
