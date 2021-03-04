@@ -5,19 +5,59 @@
     <title>Snake Party</title>
 </head>
 <body style="background-color: #333333;min-height: 300px">
-    <label style="color: #DDDDDD;background-color: #333333;left:50%;top: 30%;position:absolute;height: 30px;margin-top: -40px;margin-left:-90px;">Lobby Key:</label>
-    <input id="myInput" type="text" style="text-align: center;left:50%;top:30%;position:absolute;width:200px;height: 30px;margin-top: -15px;margin-left:-100px;"/>
-    <button style="color: #DDDDDD;background-color: #555555;left:50%;top:30%;position:absolute;width:220px;height: 30px;margin-top: 27px;margin-left:-100px;" onclick="joinGame();">join Lobby</button>
-    <button style="color: #DDDDDD;background-color: #555555;left:50%;top:30%;position:absolute;width:220px;height: 30px;margin-top: 70px;margin-left:-100px;" onclick="hostGame();">Host Lobby</button>
-    <label style="color: #888888;background-color: #333333;left:50%;top: 100%;position:absolute;height: 30px;margin-top: -40px;margin-left:-150px;">made by Jonator3: https://github.com/Jonator3</label>
+    <canvas id='canvas'></canvas>
+    <label style="color: #DDDDDD;left:50%;top: 30%;position:absolute;height: 20px;margin-top: -40px;margin-left:-40px;">Lobby Key:</label>
+    <input id="myInput" type="text" style="text-align: center;left:50%;top:30%;position:absolute;width:210px;height: 30px;margin-top: -15px;margin-left:-110px;"/>
+    <button style="color: #DDDDDD;background-color: #555555;left:50%;top:30%;position:absolute;width:220px;height: 30px;margin-top: 27px;margin-left:-110px;" onclick="joinGame();">join Lobby</button>
+    <button style="color: #DDDDDD;background-color: #555555;left:50%;top:30%;position:absolute;width:220px;height: 30px;margin-top: 80px;margin-left:-110px;" onclick="hostGame();">Host Lobby</button>
+    <a href="https://github.com/Jonator3" style="color: #888888;background-color: #333333;left:50%;top: 100%;position:absolute;height: 30px;margin-top: -30px;margin-left:-60px;">made by Jonator3</a>
 <script>
+    let time = 0;
+    let blue = "1:1;2:1;3:1;4:1;5:1;6:1;7:1;8:1;9:1;10:1;10:2;10:3;11:3;12:3;13:3;14:3;15:3;16:3;16:4;16:5;16:6;16:7;16:8;16:9;16:10;16:11;16:12;16:13;16:14;15:14;14:14;13:14;12:14;11:14;10:14;9:14;8:14;8:15;8:16;7:16;6:16;5:16;4:16;3:16;2:16;1:16;1:15;1:14;1:13;1:12;1:11;1:10;1:9;1:8;1:7;1:6;1:5;1:4;1:3;1:2";
+    let orange = "10:17;10:16;10:15;10:14;10:13;10:12;9:12;8:12;7:12;7:13;6:13;5:13;4:13;4:12;4:11;4:10;4:9;4:8;4:7;4:6;4:5;4:4;4:3;5:3;6:3;7:3;8:3;9:3;9:2;9:1;10:1;11:1;12:1;13:1;14:1;15:1;16:1;17:1;17:2;17:3;17:4;17:5;17:6;17:7;17:8;17:9;17:10;17:11;17:12;17:13;17:14;17:15;17:16;17:17;16:17;15:17;14:17;13:17;12:17;11:17";
     function hostGame(){
         location.href = 'http://' + location.hostname + '/game.html?key=host';
     }
     function joinGame(){
-        var key = document.getElementById("myInput").value;
+        let key = document.getElementById("myInput").value;
         location.href = 'http://' + location.hostname + '/game.html?key=' + key;
     }
+    function drawBkFrame(){
+        let canvasElem = document.getElementById('canvas');
+        canvasElem.width = window.innerWidth-20;
+        canvasElem.height = window.innerHeight-50;
+        let ctx = canvasElem.getContext('2d');
+        ctx.fillStyle = "#333333";
+        ctx.fillRect(0,0,canvasElem.width,canvasElem.height);
+
+        let sx = (canvasElem.width-Math.min(canvasElem.height,canvasElem.width))/2;
+        let sy = (canvasElem.height-Math.min(canvasElem.height,canvasElem.width))/2;
+        let size = Math.min(canvasElem.height,canvasElem.width)/20;
+
+        let pb = blue.split(";");
+        let po = orange.split(";");
+
+        for(let i=0;i<7;i++){
+            ctx.fillStyle = "#5064FF";
+            let t = (time + i) % pb.length;
+            console.log(t)
+            let pos = pb[t].split(":");
+            ctx.fillRect(sx+parseInt(pos[0])*size,sy+parseInt(pos[1])*size,size+1,size+1);
+
+            ctx.fillStyle = "#FF8200";
+            t = (time + i) % po.length;
+            console.log(t)
+            pos = po[t].split(":");
+            ctx.fillRect(sx+parseInt(pos[0])*size,sy+parseInt(pos[1])*size,size+1,size+1);
+        }
+    }
+    function timer(){
+        time++;
+        drawBkFrame();
+        setTimeout(() => {  timer(); }, 400);
+    }
+    timer();
+    window.addEventListener('resize', function(event){drawBkFrame();});
 </script>
 </body>
 </html>
