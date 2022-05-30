@@ -1,6 +1,7 @@
 from datetime import datetime
 import time
 
+
 class Clock(object):
 
     def __init__(self):
