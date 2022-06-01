@@ -1,3 +1,5 @@
 /chromium/
 /venv/
 *.log
+
+/web/qr.png

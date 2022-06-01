@@ -1,4 +1,7 @@
 import random
+
+import eel
+
 import setup
 from AdvancedTiming import Clock
 import time
@@ -457,6 +460,8 @@ def sendMenuScreen(lobby):
     freeColours = lobby.getFreeColours()
     size = setup.SIZE_SET[lobby.fieldsize]
     time = lobby.playtime
+    eel.draw_menu(freeColours, size, time)
+    # TODO make frontend
     msg = "M:"
     for c in freeColours:
         msg += hex(c)[2:]

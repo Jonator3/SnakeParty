@@ -7,6 +7,7 @@ import time
 import queue
 import SharedData as SD
 from Logger import logged_print as print
+import eel
 
 
 menu_shift_dict = {
@@ -32,53 +33,20 @@ menu_shift_dict = {
     "uc4": "c4",
     "lc5": "c5",
     "rc5": "c6",
-    "dc5": "m0",
     "uc5": "c0",
     "lc6": "c5",
     "rc6": "c7",
-    "dc6": "m0",
     "uc6": "c1",
     "lc7": "c6",
     "rc7": "c8",
-    "dc7": "m0",
     "uc7": "c2",
     "lc8": "c7",
     "rc8": "c9",
-    "dc8": "m0",
     "uc8": "c3",
     "lc9": "c8",
     "rc9": "c9",
-    "dc9": "m0",
     "uc9": "c4",
-    "lm0": "m0",
-    "rm0": "m1",
-    "dm0": "m0",
-    "um0": "c5",
-    "lm1": "m0",
-    "rm1": "m2",
-    "dm1": "m1",
-    "um1": "c5",
-    "lm2": "m1",
-    "rm2": "m2",
-    "dm2": "m2",
-    "um2": "c5"
 }
-
-
-def generateKey():
-    while True:
-        key = ""
-        while len(key) < setup.KEY_LEN:
-            key += random.choice("123456789abcdefghjklmnpqrstuvwxyz")
-        if SD.lobby_dict.get(key) is None:
-            return key
-
-
-def lobbyCreator(host):
-    return Lobby(host).id
-
-
-SD.lobbyCreator = lobbyCreator
 
 
 class LobbyFullError(RuntimeError):
@@ -89,9 +57,9 @@ class LobbyFullError(RuntimeError):
 
 class Lobby(object):
 
-    def __init__(self, host):
+    def __init__(self):
         self.mouseInput = queue.Queue(10)
-        self.id = generateKey()
+        self.id = "lobby"
         print(self.id, "lobby opened")
         SD.lobby_dict[self.id] = self
         self.fieldsize = setup.DEF_SIZE
@@ -100,7 +68,6 @@ class Lobby(object):
         self.colours = {}
         self.thread = Thread(target=self.loop)
         self.cursors = {}
-        self.addClient(host)
         self.thread.start()
 
     def getFreeColours(self):
@@ -130,26 +97,33 @@ class Lobby(object):
     def clientMouseInput(self, player, pos):
         self.mouseInput.put_nowait((player, pos))
 
+    def change_time(self, diff):
+        self.playtime += diff
+        if self.playtime > setup.MAX_LEN:
+            self.playtime = setup.MAX_LEN
+        elif self.playtime < 1:
+            self.playtime = 1
+
+    def change_size(self, diff):
+        self.fieldsize += diff
+        if self.fieldsize >= len(setup.SIZE_SET):
+            self.fieldsize = len(setup.SIZE_SET)-1
+        elif self.fieldsize < 0:
+            self.fieldsize = 0
+
+    def run_game(self):
+        GameSys.Game(setup.SIZE_SET[self.fieldsize], self.playtime, self.players, self).Run()
+        while self.mouseInput.qsize() > 0:
+            self.mouseInput.get_nowait()
+        for id in self.players:
+            self.cursors[id] = "c0"
+
     def handelEnter(self, player, pos):
         if pos.startswith("c"):
             c = int(pos[1], 10)
             if self.getFreeColours().__contains__(c):
                 self.colours[player] = c
                 WebServer.send_message(player, "C:" + hex(c)[2:])
-        elif pos == "m0" and player == self.players[0]:
-            self.playtime += 1
-            if self.playtime > setup.MAX_LEN:
-                self.playtime = 1
-        elif pos == "m1" and player == self.players[0]:
-            self.fieldsize += 1
-            if self.fieldsize >= len(setup.SIZE_SET):
-                self.fieldsize = 0
-        elif pos == "m2" and player == self.players[0]:
-            GameSys.Game(setup.SIZE_SET[self.fieldsize], self.playtime, self.players, self).Run()
-            while self.mouseInput.qsize() > 0:
-                self.mouseInput.get_nowait()
-            for id in self.players:
-                self.cursors[id] = "c0"
 
     def loop(self):
         while 1:
@@ -184,3 +158,31 @@ class Lobby(object):
                 self.cursors[player] = pos
                 self.handelEnter(player, pos)
             time.sleep(0.2)
+
+
+SD.lobby = Lobby()
+
+
+@eel.expose
+def time_down():
+    SD.lobby.change_time(-1)
+
+
+@eel.expose
+def time_up():
+    SD.lobby.change_time(1)
+
+
+@eel.expose
+def size_down():
+    SD.lobby.change_size(-1)
+
+
+@eel.expose
+def size_up():
+    SD.lobby.change_size(1)
+
+
+@eel.expose
+def start_game():
+    SD.lobby.run_game()

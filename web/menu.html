@@ -1,0 +1,311 @@
+<html>
+<head>
+    <meta name='viewport' content='width=device-width, initial-scale=0.8, user-scalable=no' charset="UTF-8">
+    <title>Snake Party</title>
+    <style>* { margin: 0; padding: 0; }html, body { width: 100%; height: 100%; }canvas { display: block; }</style>
+    <script type="text/javascript" src="/eel.js"></script>
+</head>
+<body id='body' style="min-height: 300px;min-width: 400px;background-color: #333333;color: #DDDDDD">
+
+<canvas id='canvas' style="position: fixed; left: 0; top: 0; visibility: hidden" ></canvas>
+<div id="menu_tray" style="position: fixed; left: 0; top: 0; visibility: visible;width: 100%">
+    <table style="margin-top: 10%;width: 80%;margin-left: 10%">
+        <tr>
+            <th id="link" style="text-align: left;font-size: 5vh"></th>
+            <th style="text-align: left;font-size: 5vh">Game Menu:</th>
+        </tr>
+        <tr>
+            <td>
+                <img src="qr.png" style="height: 50vh;max-width: 90%;object-fit: contain;border-radius: 10%">
+            </td>
+            <td>
+                <table style="font-size: 3vh">
+                    <tr>
+                        <td><button style="font-size: 3vh;padding: 2%;width: 5vw" onclick="eel.time_down()"> < </button></td>
+                        <th>TIME</th>
+                        <td><button style="font-size: 3vh;padding: 2%;width: 5vw" onclick="eel.time_up()"> > </button></td>
+                    </tr>
+                    <tr>
+                        <td><button style="font-size: 3vh;padding: 2%;width: 5vw" onclick="eel.size_down()"> < </button></td>
+                        <th>SIZE</th>
+                        <td><button style="font-size: 3vh;padding: 2%;width: 5vw" onclick="eel.size_up()"> > </button></td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <th><button style="font-size: 2vh;padding: 2%;width: 100%" onclick="eel.start_game()">START</button></th>
+                        <td></td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+</div>
+
+<script>
+
+var col_names = ["Blue","Orange","Lime","Red","Yellow","Green","Pink","White","Purple","Cyan"]
+var colors = ["#5064FF","#FF8200","#AAFF24","#FF1414","#FAF000","#00A300","#FA6496","#FAFAFA","#DC00FA","#00FFC8","#009300","#b38d0c","#AA0000","#0000AA","#22FF22"];
+var color = "#555555";
+var bk_color = "#333333"
+var lastFrame = "None";
+
+document.getElementById("link").innerText = "http://" + location.hostname + ":" + location.port + "/game.html";
+
+draw();
+
+socket.addEventListener('message', function (event) {
+
+    if(event.data.startsWith("G:")){  // Draw Frame of running Game
+        var data = event.data.split(":")[1].split(";");
+        drawGame(data);
+    }if(event.data.startsWith("W:")){ // Draw waiting Screen
+        var data = event.data.split(":")[1];
+        drawWaitGame(data);
+    }if(event.data.startsWith("M:")){ // Draw Menu
+        var data = event.data.split(":")[1].split(";");
+        drawMenu(data);
+    }if(event.data.startsWith("E:")){ // Draw End Screen
+        var data = event.data.split(":")[1];
+        drawEndGame(data);
+    }if (!(event.data == "")){  // Log message
+        console.log('server says: ', event.data);
+    }
+});
+
+var bodyElem = document.getElementById('body');
+bodyElem.addEventListener('keydown', function(event) {
+    var key = event.key;
+
+    console.log(key);
+
+}, false);
+
+
+function contains(S,n){
+    for(let i=0;i < S.length;i++){
+        if(n == S.charAt(i)) {
+            return true;
+        }
+    }
+    return false;
+}
+
+
+function draw() {
+    lastFrame = "None";
+    var label = document.getElementById("invitelink");
+    label.style = "font-family: Arial;font-size: 10px;color: #777777;background-color: #333333;left:0%;top: 0%;position:absolute;height: 15px;margin-top: -30";
+    var canvasElem = document.getElementById('canvas');
+    canvasElem.width = window.innerWidth;
+    canvasElem.height = window.innerHeight;
+    var ctx = canvasElem.getContext('2d');
+    ctx.fillStyle = bk_color;
+    ctx.fillRect(0, 0, canvasElem.width, canvasElem.height);
+}
+
+function drawError(msg) {
+    lastFrame = "Err";
+    var label = document.getElementById("invitelink");
+    label.style = "font-family: Arial;font-size: 10px;color: #777777;background-color: #333333;left:0%;top: 0%;position:absolute;height: 15px;margin-top: -30";
+    msg = "Error: " + msg;
+    var canvasElem = document.getElementById('canvas');
+    canvasElem.width = window.innerWidth;
+    canvasElem.height = window.innerHeight;
+    var ctx = canvasElem.getContext('2d');
+    ctx.fillStyle = bk_color;
+    ctx.fillRect(0, 0, canvasElem.width, canvasElem.height);
+    var Fscale = Math.floor(Math.min(canvasElem.height/3, canvasElem.width/((msg.length/1.8)+2) ));
+    ctx.font = Fscale.toString(10) + "px Arial";
+    var pre = Math.floor((canvasElem.height - Fscale*2.3)/2);
+
+    ctx.fillStyle = "#FF0000";
+    ctx.fillText(msg, Fscale, ((canvasElem.height-Fscale)/2)+Fscale);
+}
+
+function drawEndGame(data) {
+    lastFrame = "End";
+    var label = document.getElementById("invitelink");
+    label.style = "font-family: Arial;font-size: 10px;color: #777777;background-color: #333333;left:0%;top: 0%;position:absolute;height: 15px;margin-top: -30";
+    var canvasElem = document.getElementById('canvas');
+    var ctx = canvasElem.getContext('2d');
+    var wc = colors[parseInt(data,10)];
+    var winner = col_names[parseInt(data,10)];
+    var isHorizontal = canvasElem.width > canvasElem.height;
+    var smallside = 0;
+    if(isHorizontal){
+        smallside = canvasElem.height;
+    }else {
+        smallside = canvasElem.width;
+    }
+    ctx.fillStyle = bk_color;
+    ctx.fillRect(0, 0, canvasElem.width, canvasElem.height);
+    var Fscale = Math.floor(Math.min(canvasElem.height/2.3, canvasElem.width/6 ));
+    ctx.font = Fscale.toString(10) + "px Arial";
+    var pre = Math.floor((canvasElem.height - Fscale*2.3)/2);
+
+    ctx.fillStyle = wc;
+    ctx.fillText(winner, Fscale, Fscale*1.1 + pre);
+    ctx.font = Math.floor(Fscale * 0.65).toString() + "px Arial";
+    ctx.fillStyle = "#555555";
+    ctx.fillText("Won the Game!", Fscale, Fscale * 2.2 + pre);
+}
+
+function drawWaitGame(data) {
+    lastFrame = "Wait";
+    var label = document.getElementById("invitelink");
+    label.style = "font-family: Arial;font-size: 10px;color: #777777;background-color: #333333;left:0%;top: 0%;position:absolute;height: 15px;margin-top: -30";
+    var canvasElem = document.getElementById('canvas');
+    var ctx = canvasElem.getContext('2d');
+    var sec = parseInt(data, 16);
+    var isHorizontal = canvasElem.width > canvasElem.height;
+    var smallside = 0;
+    if(isHorizontal){
+        smallside = canvasElem.height;
+    }else {
+        smallside = canvasElem.width;
+    }
+    ctx.fillStyle = bk_color;
+    ctx.fillRect(0, 0, canvasElem.width, canvasElem.height);
+    ctx.font = Math.floor(smallside / 1.2).toString() + "px Arial";
+
+    ctx.fillStyle = "#555555";
+    ctx.fillText(sec.toString(10), 50, smallside-50);
+}
+
+function drawMenu(data) {
+    lastFrame = "Menu";
+    var canvasElem = document.getElementById('canvas');
+    var ctx = canvasElem.getContext('2d');
+    var freeColours = data[0];
+    var time = data[1] + "min"
+    var size = data[2]
+    var host = false;
+    if (data[3] == "1"){
+        host = true;}
+    var isHorizontal = canvasElem.width > canvasElem.height;
+    var pos = data[4];
+
+    var Cscale = Math.floor(Math.min(canvasElem.height/4.5, canvasElem.width/6));
+    var CCscale = Cscale + (Cscale/5);
+    var Fscale = Math.floor(Math.min((canvasElem.height-(2*CCscale))/3.2, ((6*Cscale)-100)/9));
+    ctx.font = Fscale.toString(10) + "px Arial";
+    ctx.fillStyle = bk_color;
+    ctx.fillRect(0, 0, canvasElem.width, canvasElem.height);
+    var space = Cscale/6;
+    ctx.fillStyle = color;
+    if (pos.startsWith("c")){
+        var n = parseInt(pos.charAt(1),10);
+        var x = n % 5;
+        var y = 0;
+        if(n >= 5){y = 1;}
+
+        ctx.fillRect((Cscale * x) + (space * (x+1)) - (CCscale-Cscale)/2, (Cscale * y) + (space * (y+1)) - (CCscale-Cscale)/2, CCscale, CCscale);
+    }if(pos.startsWith("m")){
+        var n = parseInt(pos.charAt(1),10);
+        var over = Math.min(Fscale/5, 15);
+        ctx.fillRect(30+(Fscale*3*n)+(20*n)-over, 2*CCscale-over+Fscale/3, (Fscale*3)+(2*over), Fscale*1.3+(2*over));
+    }
+    for(let i=0; i < 10;i++){
+        var x = i % 5;
+        var y = 0;
+        if(i >= 5){y = 1;}
+        var col = "#555555"
+        if(contains(freeColours,i)){
+            col = colors[i];
+        }
+        ctx.fillStyle = col;
+        ctx.fillRect((Cscale * x) + (space * (x+1)), (Cscale * y) + (space * (y+1)), Cscale, Cscale);
+    }
+    ctx.fillStyle = "#555555";
+    if (host) {ctx.fillStyle = "#9a6526";}
+    ctx.fillRect(30, 2*CCscale + Fscale/3, Fscale*3, Fscale*1.3);
+    ctx.fillRect(50+(Fscale*3), 2*CCscale + Fscale/3, Fscale*3, Fscale*1.3);
+    ctx.fillRect(70+(Fscale*6), 2*CCscale + Fscale/3, Fscale*3, Fscale*1.3);
+
+    ctx.fillStyle = "#DDDDDD";
+    ctx.fillText(time, 40, (2*CCscale)+Fscale + Fscale/3);
+    ctx.fillText(size + "x" + size, 60+(Fscale*3), (2*CCscale)+Fscale + Fscale/3);
+    ctx.fillText("Start", 80+(Fscale*6), (2*CCscale)+Fscale + Fscale/3);
+    //ctx.fillStyle = "#777777";
+    //ctx.fillText("Lobby Key: " + id.toUpperCase(), 20, canvasElem.height-15);
+    var label = document.getElementById("invitelink");
+    label.style = "font-family: Arial;font-size: "+Fscale.toString(10)+"px;color: #777777;background-color: #333333;left:0%;top: 100%;position:absolute;height: "+Fscale.toString(10)+"px;margin-top: -"+Math.floor(Fscale*1.3).toString(10)+"px;margin-left: "+space.toString(10)+"px";
+}
+
+function drawGame(data) {
+    lastFrame = "Game";
+    var label = document.getElementById("invitelink");
+    label.style = "font-family: Arial;font-size: 10px;color: #777777;background-color: #333333;left:0%;top: 0%;position:absolute;height: 15px;margin-top: -30";
+
+    var canvasElem = document.getElementById('canvas');
+    var ctx = canvasElem.getContext('2d');
+    var size = parseInt(data[1],16);
+    var time = parseInt(data[2],16);
+    var min = Math.floor(time/60);
+    var sec = time % 60;
+    var timeS = min.toString(10) + ":";
+    if (sec < 10){
+        timeS += "0" + sec.toString(10)
+    }else {
+        timeS += sec.toString(10)
+    }
+    var isHorizontal = canvasElem.width > canvasElem.height;
+    var squr = 2.0;
+    var smallside = 0;
+    if(isHorizontal){
+        squr = canvasElem.width/canvasElem.height;
+        smallside = canvasElem.height;
+    }else {
+        smallside = canvasElem.width;
+        squr = canvasElem.height/canvasElem.width;
+    }if (squr < 1.2){
+        smallside *= (0.8+(squr - 1));
+    }
+    var fieldsize = smallside/size;
+    ctx.fillStyle = bk_color;
+    ctx.fillRect(0, 0, canvasElem.width, canvasElem.height);
+    ctx.fillStyle = "#444444";
+    ctx.fillRect(0, 0, smallside, smallside);
+    var screenData = data[0].split(",")
+    for (let i=0;i<screenData.length;i++){
+        var sd = screenData[i].split(".");
+        var n = parseInt(sd[0], 16);
+        var posX = Math.floor(parseInt(sd[1],16)*fieldsize);
+        var posY = Math.floor(parseInt(sd[2],16)*fieldsize);
+        var sizeX = Math.floor(parseInt(sd[4],16)*fieldsize);
+        var sizeY = Math.floor(parseInt(sd[3],16)*fieldsize);
+        if(n < 10){
+            ctx.fillStyle = colors[n];
+            ctx.fillRect(posX, posY, sizeX+1, sizeY+1);
+        }else{
+            ctx.fillStyle = colors[n];
+            ctx.fillRect(posX + (fieldsize*0.07), posY + (fieldsize*0.07), fieldsize  - (fieldsize*0.14), fieldsize  - (fieldsize*0.14));
+            ctx.fillStyle = colors[14];
+            ctx.fillRect(posX + (fieldsize*0.2), posY + (fieldsize*0.2), fieldsize  - (fieldsize*0.4), fieldsize  - (fieldsize*0.4));
+        }
+    }
+    ctx.font = "40px Arial";
+    ctx.fillStyle = "#DDDDDD";
+    var sx = 10;
+    var sy = smallside + 45;
+    if (isHorizontal){
+        sx = smallside + 10;
+        sy = 45;
+    }
+    ctx.fillText(timeS, sx, sy);
+    ctx.font = "30px Arial";
+    for(let i=3;i<data.length;i++){
+        var d = data[i].split(",");
+        var c = parseInt(d[0], 16);
+        var score = parseInt(d[1], 16);
+        ctx.fillStyle = colors[c];
+        ctx.fillText(score.toString(10), sx, sy + 40 + ((i-3) * 30));
+    }
+}
+
+
+window.addEventListener('resize', function(event){draw();});
+
+</script>
+</body>
+</html>
