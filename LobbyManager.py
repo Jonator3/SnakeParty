@@ -1,5 +1,5 @@
+import threading
 from threading import Thread
-import random
 import setup
 import GameSys
 import WebServer
@@ -61,7 +61,6 @@ class Lobby(object):
         self.mouseInput = queue.Queue(10)
         self.id = "lobby"
         print(self.id, "lobby opened")
-        SD.lobby_dict[self.id] = self
         self.fieldsize = setup.DEF_SIZE
         self.playtime = setup.DEF_LEN
         self.players = []
@@ -69,6 +68,7 @@ class Lobby(object):
         self.thread = Thread(target=self.loop)
         self.cursors = {}
         self.thread.start()
+        self.should_run = False
 
     def getFreeColours(self):
         colours = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
@@ -126,11 +126,9 @@ class Lobby(object):
                 WebServer.send_message(player, "C:" + hex(c)[2:])
 
     def loop(self):
+        time.sleep(5)  # boot delay
         while 1:
-            if self.players.__len__() == 0:
-                SD.lobby_dict.pop(self.id)
-                print(self.id, "lobby closed")
-                return
+            GameSys.sendMenuScreen(self)
             for C in self.players:
                 inp = SD.client_dict.get(C).getInput()
                 input = ""
@@ -150,13 +148,15 @@ class Lobby(object):
                 elif input != "":
                     key = input + self.cursors.get(C)
                     self.cursors[C] = menu_shift_dict.get(key)
-                GameSys.sendMenuScreen(self)
             while self.mouseInput.qsize() > 0:
                 player, pos = self.mouseInput.get_nowait()
                 if player is None:
                     break
                 self.cursors[player] = pos
                 self.handelEnter(player, pos)
+            if self.should_run:
+                self.run_game()
+                self.should_run = False
             time.sleep(0.2)
 
 
@@ -185,4 +185,10 @@ def size_up():
 
 @eel.expose
 def start_game():
-    SD.lobby.run_game()
+    if len(SD.lobby.players) > 0:
+        SD.lobby.should_run = True
+
+
+tl = threading.Thread(target=SD.lobby.loop)
+tl.daemon = True
+tl.start()

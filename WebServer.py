@@ -73,7 +73,6 @@ def websocket_server():
             if ws == search_ws:
                 return id
 
-
     async def websocket_handler(websocket, path):
         def generateId():
             while True:
@@ -117,26 +116,14 @@ def send_message(id, str):
 
 def on_message(cid, msg):
     if msg.startswith("K:"):
-        key = msg[2:].lower()
-        if SD.client_lobby_dict.get(cid):
-            return
-        if key == "host":
-            key = SD.lobbyCreator(cid)
-            SD.client_dict.get(cid).getInput()
-            SD.client_lobby_dict[cid] = key
-        else:
-            try:
-                lobby = SD.lobby_dict.get(key)
+                lobby = SD.lobby
                 if lobby is None:
                     send_message(cid, "NoLobby")
                     return
                 lobby.addClient(cid)
                 SD.client_dict.get(cid).getInput()
-                SD.client_lobby_dict[cid] = key
-            except Exception:
-                send_message(cid, "NoLobby")
     elif msg.startswith("C:"):
-        SD.lobby_dict.get(SD.client_lobby_dict.get(cid)).clientMouseInput(cid, msg[2:])
+        SD.lobby.clientMouseInput(cid, msg[2:])
     else:
         SD.client_dict.get(cid).setInput(msg)
 
@@ -149,11 +136,8 @@ def on_connection_open(id):
 def on_connection_close(id):
     print("Someone just disconnected! id: " + id)
 
-    lobby = SD.client_lobby_dict.get(id)
-    if lobby:
-        SD.lobby_dict.get(lobby).delClient(id)
-        SD.client_lobby_dict.pop(id)
-        SD.client_dict.pop(id)
+    SD.lobby.delClient(id)
+    SD.client_dict.pop(id)
 
 
 def S_Loop():
@@ -166,6 +150,8 @@ def S_Loop():
 def start_server():
     s = Thread(target=websocket_server)
     l = Thread(target=S_Loop)
+    s.daemon = True
+    l.daemon = True
     s.start()
     l.start()
 

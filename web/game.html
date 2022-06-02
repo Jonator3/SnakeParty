@@ -6,18 +6,16 @@
 </head>
 <body id='body' style="min-height: 300px;min-width: 400px">
 <canvas id='canvas'></canvas>
-<label id='invitelink' style="font-family: Arial;font-size: 10px;color: #333333;background-color: #333333;left:0%;top: 0%;position:absolute;height: 30px;margin-top: -40px;margin-left:0px;"></label>
 <script>
 
-var id = new URLSearchParams(window.location.search).get('key');
+var id = 'lobby';
 var col_names = ["Blue","Orange","Lime","Red","Yellow","Green","Pink","White","Purple","Cyan"]
-var colors = ["#5064FF","#FF8200","#AAFF24","#FF1414","#FAF000","#00A300","#FA6496","#FAFAFA","#DC00FA","#00FFC8","#009300","#b38d0c","#AA0000","#0000AA","#22FF22"];
+var colors = ["#5064FF","#FF8200","#AAFF24","#FF1414","#FAF000","#00A300","#FA6496","#FAFAFA","#AC00FF","#00FFC8","#009300","#b38d0c","#AA0000","#0000AA","#22FF22"];
 var color = "#555555";
 var bk_color = "#333333"
 var lastFrame = "None";
 
 draw();
-document.getElementById("invitelink").textContent = "Lobby Key: " + id.toUpperCase();
 
 const socket = new WebSocket('ws://' + location.hostname + ':41800');
 
@@ -26,19 +24,18 @@ socket.addEventListener('open', function (event) {
 socket.addEventListener('close', function (event) {
     console.log("Connection closed!");
     drawError("Connection Lost!");
-    setTimeout(() => {  location.href = 'http://' + location.hostname + ':8080'; }, 5000);
+    setTimeout(() => {  location.href = 'http://' + location.hostname + ':'+ location.port + "/game.html"; }, 5000);
 });
 
 socket.addEventListener('message', function (event) {
     if(event.data.startsWith("NoLobby")){
-        drawError("Lobby " + id + " not Found!")
-        setTimeout(() => {  location.href = 'http://' + location.hostname + ':8080'; }, 4000);
+        drawError("404 game not Found!")
+    setTimeout(() => {  location.href = 'http://' + location.hostname + ':'+ location.port + "/game.html"; }, 5000);
     }
     if(event.data.startsWith("C:")){
         color = colors[parseInt(event.data.split(":")[1])];
     }if(event.data.startsWith("K:")){
         id = event.data.split(":")[1];
-        document.getElementById("invitelink").textContent = "Lobby Key: " + id.toUpperCase();
     }if(event.data.startsWith("G:")){
         var data = event.data.split(":")[1].split(";");
         drawGame(data);
@@ -125,8 +122,6 @@ bodyElem.addEventListener('touchstart', function(event) {
             console.log('up');}}}, false);
 function draw() {
     lastFrame = "None";
-    var label = document.getElementById("invitelink");
-    label.style = "font-family: Arial;font-size: 10px;color: #777777;background-color: #333333;left:0%;top: 0%;position:absolute;height: 15px;margin-top: -30";
     var canvasElem = document.getElementById('canvas');
     canvasElem.width = window.innerWidth;
     canvasElem.height = window.innerHeight;
@@ -135,8 +130,6 @@ function draw() {
     ctx.fillRect(0, 0, canvasElem.width, canvasElem.height);}
 function drawError(msg) {
     lastFrame = "Err";
-    var label = document.getElementById("invitelink");
-    label.style = "font-family: Arial;font-size: 10px;color: #777777;background-color: #333333;left:0%;top: 0%;position:absolute;height: 15px;margin-top: -30";
     msg = "Error: " + msg;
     var canvasElem = document.getElementById('canvas');
     canvasElem.width = window.innerWidth;
@@ -152,8 +145,6 @@ function drawError(msg) {
     ctx.fillText(msg, Fscale, ((canvasElem.height-Fscale)/2)+Fscale);}
 function drawEndGame(data) {
     lastFrame = "End";
-    var label = document.getElementById("invitelink");
-    label.style = "font-family: Arial;font-size: 10px;color: #777777;background-color: #333333;left:0%;top: 0%;position:absolute;height: 15px;margin-top: -30";
     var canvasElem = document.getElementById('canvas');
     var ctx = canvasElem.getContext('2d');
     var wc = colors[parseInt(data,10)];
@@ -179,8 +170,6 @@ function drawEndGame(data) {
 }
 function drawWaitGame(data) {
     lastFrame = "Wait";
-    var label = document.getElementById("invitelink");
-    label.style = "font-family: Arial;font-size: 10px;color: #777777;background-color: #333333;left:0%;top: 0%;position:absolute;height: 15px;margin-top: -30";
     var canvasElem = document.getElementById('canvas');
     var ctx = canvasElem.getContext('2d');
     var sec = parseInt(data, 16);
@@ -260,15 +249,9 @@ function drawMenu(data) {
     ctx.fillText(time, 40, (2*CCscale)+Fscale + Fscale/3);
     ctx.fillText(size + "x" + size, 60+(Fscale*3), (2*CCscale)+Fscale + Fscale/3);
     ctx.fillText("Start", 80+(Fscale*6), (2*CCscale)+Fscale + Fscale/3);
-    //ctx.fillStyle = "#777777";
-    //ctx.fillText("Lobby Key: " + id.toUpperCase(), 20, canvasElem.height-15);
-    var label = document.getElementById("invitelink");
-    label.style = "font-family: Arial;font-size: "+Fscale.toString(10)+"px;color: #777777;background-color: #333333;left:0%;top: 100%;position:absolute;height: "+Fscale.toString(10)+"px;margin-top: -"+Math.floor(Fscale*1.3).toString(10)+"px;margin-left: "+space.toString(10)+"px";
 }
 function drawGame(data) {
     lastFrame = "Game";
-    var label = document.getElementById("invitelink");
-    label.style = "font-family: Arial;font-size: 10px;color: #777777;background-color: #333333;left:0%;top: 0%;position:absolute;height: 15px;margin-top: -30";
 
     var canvasElem = document.getElementById('canvas');
     var ctx = canvasElem.getContext('2d');

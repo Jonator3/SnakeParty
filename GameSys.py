@@ -438,19 +438,23 @@ def sendGameScreen(game: Game):
     board = ""
     for S in snakes:
         board += ";" + hex(S.getColor())[2:] + "," + hex(S.getScore())[2:]
+    eel.drawGame(size, time, msg.split(","), board[1:].split(";"))
     for C in game.players:
         WebServer.send_message(C, "G:" + msg + ";" + size + ";" + time + board)
         WebServer.send_message(C,"")
 
 
 def sendWaitScreen(game: Game, sec: int):
+    eel.drawWaitGame(sec)
     for C in game.players:
         WebServer.send_message(C, "W:" + hex(sec)[2:])
         WebServer.send_message(C,"")
 
 
 def sendEndScreen(game: Game, winner):
-    msg = hex(winner[0].getColor())[2:]
+    col = winner[0].getColor()
+    msg = hex(col)[2:]
+    eel.drawEndGame(col)
     for C in game.players:
         WebServer.send_message(C, "E:" + msg)
         WebServer.send_message(C,"")
@@ -461,7 +465,8 @@ def sendMenuScreen(lobby):
     size = setup.SIZE_SET[lobby.fieldsize]
     time = lobby.playtime
     eel.draw_menu(freeColours, size, time)
-    # TODO make frontend
+    if len(lobby.players) <= 0:
+        return
     msg = "M:"
     for c in freeColours:
         msg += hex(c)[2:]
@@ -472,11 +477,6 @@ def sendMenuScreen(lobby):
             pos = "c0"
             lobby.cursors[C] = "c0"
             print("Why is it None?")
-        h = ""
-        if C == lobby.players[0]:
-            h = "1"
-        else:
-            h = "0"
-        msg2 = h + ";" + pos
+        h = "0"
         WebServer.send_message(C, msg + h + ";" + pos)
-        WebServer.send_message(C,"")
+        WebServer.send_message(C, "")

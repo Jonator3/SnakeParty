@@ -3,6 +3,7 @@ import os
 import subprocess
 import threading
 import socket
+import time
 
 import eel
 import qrcode
@@ -44,3 +45,15 @@ server_thread.start()
 
 subprocess.call([os.path.realpath("chromium/chrome"), '--app=http://'+str(sys_ip)+':'+str(eel_port)+'/menu.html', '--no-sandbox'])
 
+
+# ensure program end
+def kill():
+    time.sleep(1)
+    os.kill(os.getpid(), 9)
+
+
+tk = threading.Thread(target=kill)
+tk.daemon = True
+tk.start()
+
+exit(0)
