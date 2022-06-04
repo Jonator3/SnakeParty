@@ -94,8 +94,9 @@ function draw_menu(freeColours, size, time){
 var bodyElem = document.getElementById('body');
 bodyElem.addEventListener('keydown', function(event) {
     var key = event.key;
-
-    console.log(key);
+    if (key === "Escape"){
+        eel.close_game();
+    }
 
 }, false);
 
@@ -250,23 +251,24 @@ function drawGame(size, time, screenData, board) {
                 ctx.fillRect(posX + (fieldsize*0.2), posY + (fieldsize*0.2), fieldsize  - (fieldsize*0.4), fieldsize  - (fieldsize*0.4));
             }
         }
-        ctx.font = "40px Arial";
-        ctx.fillStyle = "#DDDDDD";
         var sx = 10;
-        var sy = smallside + 45;
+        var sy = smallside + 10;
         if (isHorizontal){
             sx = smallside + 10;
-            sy = 45;
+            sy = 10;
         }
-        ctx.fillText(timeS, sx, sy);
-        ctx.font = "30px Arial";
+        var Fscale = Math.floor(Math.min((canvasElem.height-sy)/15, (canvasElem.width-sx)/8))
+        ctx.font = Math.floor(1.5*Fscale).toString() + "px Arial";
+        ctx.fillStyle = "#DDDDDD";
+        ctx.fillText(timeS, sx, sy + Math.floor(1.5*Fscale));
+        ctx.font = Fscale.toString() + "px Arial";
         for(let i=0;i<board.length;i++){
             console.log(board[i])
             var d = board[i].split(",");
             var c = parseInt(d[0], 16);
             var score = parseInt(d[1], 16);
             ctx.fillStyle = colors[c];
-            ctx.fillText(score.toString(10), sx, sy + 40 + (i * 30));
+            ctx.fillText(score.toString(10), sx, sy + Math.floor(3*Fscale) + (i * Fscale));
         }
     }, 1)
 

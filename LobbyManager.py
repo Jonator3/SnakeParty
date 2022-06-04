@@ -113,7 +113,8 @@ class Lobby(object):
             self.fieldsize = 0
 
     def run_game(self):
-        GameSys.Game(setup.SIZE_SET[self.fieldsize], self.playtime, self.players, self).Run()
+        game = GameSys.Game(setup.SIZE_SET[self.fieldsize], self.playtime, self.players, self)
+        game.Run()
         while self.mouseInput.qsize() > 0:
             self.mouseInput.get_nowait()
         for id in self.players:

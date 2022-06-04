@@ -10,6 +10,9 @@ import WebServer
 from Logger import logged_print as print
 
 
+games = []
+
+
 class PowerUp(object):
     
     def __init__(self, game):
@@ -213,6 +216,7 @@ class Game(object):
         self.power_ups = []
         self.snakes = []
         self.clock = Clock()
+        self.end = False
 
         i = 0
         for P in Players:
@@ -344,6 +348,9 @@ class Game(object):
                         S.setLen(1000)
 
     def shouldRun(self):
+        if self.end:
+            self.end = False
+            return False
         if self.time_sec >= self.length * 60:
             print(self.lobby.id, "Game ended")
             return False
@@ -351,8 +358,9 @@ class Game(object):
             return True
 
     def Run(self):
+        self.end = False
+        games.append(self)
         print(self.lobby.id, "Game started")
-        isRunning = True
         tick = 0
         sec = 5
 
@@ -396,6 +404,7 @@ class Game(object):
         # Clears Input on Game end
         for P in self.players:
             SD.client_dict.get(P).getInput()
+        games.remove(self)
 
 
 def sendGameScreen(game: Game):
@@ -480,3 +489,9 @@ def sendMenuScreen(lobby):
         h = "0"
         WebServer.send_message(C, msg + h + ";" + pos)
         WebServer.send_message(C, "")
+
+
+@eel.expose
+def close_game():
+    for game in games:
+        game.end = True
