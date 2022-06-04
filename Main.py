@@ -47,4 +47,4 @@ time.sleep(5)
 subprocess.call([os.path.realpath("chromium/chrome"), '--app=http://'+str(sys_ip)+':'+str(eel_port)+'/menu.html', '--no-sandbox'])
 
 
-exit(0)
+os.kill(os.getpid(), 9)  # exit the hard way
