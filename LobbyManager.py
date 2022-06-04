@@ -67,8 +67,9 @@ class Lobby(object):
         self.colours = {}
         self.thread = Thread(target=self.loop)
         self.cursors = {}
-        self.thread.start()
         self.should_run = False
+        self.thread.daemon = True
+        self.thread.start()
 
     def getFreeColours(self):
         colours = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
@@ -128,7 +129,6 @@ class Lobby(object):
     def loop(self):
         time.sleep(5)  # boot delay
         while 1:
-            GameSys.sendMenuScreen(self)
             for C in self.players:
                 inp = SD.client_dict.get(C).getInput()
                 input = ""
@@ -157,6 +157,7 @@ class Lobby(object):
             if self.should_run:
                 self.run_game()
                 self.should_run = False
+            GameSys.sendMenuScreen(self)
             time.sleep(0.2)
 
 
@@ -188,7 +189,3 @@ def start_game():
     if len(SD.lobby.players) > 0:
         SD.lobby.should_run = True
 
-
-tl = threading.Thread(target=SD.lobby.loop)
-tl.daemon = True
-tl.start()

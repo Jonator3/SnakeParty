@@ -438,10 +438,10 @@ def sendGameScreen(game: Game):
     board = ""
     for S in snakes:
         board += ";" + hex(S.getColor())[2:] + "," + hex(S.getScore())[2:]
-    eel.drawGame(size, time, msg.split(","), board[1:].split(";"))
+    eel.drawGame(game.getSize(), (game.length * 60) - (game.time_sec + 1), msg.split(","), board[1:].split(";"))
     for C in game.players:
         WebServer.send_message(C, "G:" + msg + ";" + size + ";" + time + board)
-        WebServer.send_message(C,"")
+        WebServer.send_message(C, "")
 
 
 def sendWaitScreen(game: Game, sec: int):

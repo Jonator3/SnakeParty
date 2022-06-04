@@ -261,11 +261,12 @@ function drawGame(size, time, screenData, board) {
         ctx.fillText(timeS, sx, sy);
         ctx.font = "30px Arial";
         for(let i=0;i<board.length;i++){
-            var d = data[i].split(",");
+            console.log(board[i])
+            var d = board[i].split(",");
             var c = parseInt(d[0], 16);
             var score = parseInt(d[1], 16);
             ctx.fillStyle = colors[c];
-            ctx.fillText(score.toString(10), sx, sy + 40 + ((i-3) * 30));
+            ctx.fillText(score.toString(10), sx, sy + 40 + (i * 30));
         }
     }, 1)
 
