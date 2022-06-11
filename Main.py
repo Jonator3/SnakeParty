@@ -10,8 +10,8 @@ import qrcode
 
 import setup
 argpar = ArgumentParser()
-argpar.add_argument("configfile", required=False, default="default.ini", help="path of configfile to be used")
-args = argpar.parse_args(sys.argv)
+argpar.add_argument("configfile", nargs="?", default="default.ini", help="path of configfile to be used")
+args = argpar.parse_args(sys.argv[1:])
 if args.configfile != "":
     setup.load_conf(args.configfile)
 import LobbyManager
