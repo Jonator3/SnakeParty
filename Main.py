@@ -1,38 +1,56 @@
 
-from Logger import logged_print as print
-from datetime import datetime
-import psutil
-import asyncio
-import websockets
+import os
+import socketserver
+import sys
+import socket
+from argparse import ArgumentParser
+
+import eel
+import qrcode
+
+import setup
+argpar = ArgumentParser()
+argpar.add_argument("configfile", required=False, default="default.ini", help="path of configfile to be used")
+args = argpar.parse_args(sys.argv)
+if args.configfile != "":
+    setup.load_conf(args.configfile)
 import LobbyManager
 
 
-def resource_str():
-    msg = datetime.now().strftime('<span style="font-size: 20px">%c:<br><br>CPU:</span><br>')
-    msg += '<span style="color: #FFFFFF">..</span>cores:<span style="color: #AAAAAA">.......</span>' + str(psutil.cpu_count(False)) + '<br>'
-    msg += '<span style="color: #FFFFFF">..</span>usage:<span style="color: #AAAAAA">.......</span>' + str(round(psutil.cpu_percent(1))) + '%<br>'
-    msg += '<span style="font-size: 20px"><br>RAM:</span><br>'
-    ram = psutil.virtual_memory()
-    msg += '<span style="color: #FFFFFF">..</span>usage:<span style="color: #AAAAAA">.......</span>' + str(round(ram.percent)) + '%<br>'
-    msg += '<span style="color: #FFFFFF">..</span>total:<span style="color: #AAAAAA">.......</span>' + str(round(ram.total/(1024**2))) + 'MB'
-    return msg
-
-
-async def handler(websocket, path):
+def get_ip():
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    s.settimeout(0)
     try:
-        while 1:
-            await websocket.send(resource_str())
-            await asyncio.sleep(4)
-    except websockets.ConnectionClosed:
-        return
-
-psutil.cpu_percent()  # needed to ignore the initial 0.0 return
-
-print("SnakeParty Server started", datetime.now().strftime("%x"))
-loop = asyncio.new_event_loop()
-asyncio.set_event_loop(loop)
-server = websockets.serve(ws_handler=handler, port=41801)
-loop.run_until_complete(server)
-loop.run_forever()
+        # doesn't even have to be reachable
+        s.connect(('10.255.255.255', 1))
+        IP = s.getsockname()[0]
+    except Exception:
+        IP = '127.0.0.1'
+    finally:
+        s.close()
+    return IP
 
 
+def get_free_port():
+    with socketserver.TCPServer(("localhost", 0), None) as s:
+        worker_port = s.server_address[1]
+    return worker_port
+
+
+def start_eel():
+    eel.start("resources.html", mode='custom', host=sys_ip, port=eel_port, block=True, cmdline_args=['echo', 'hello world'])
+
+
+eel_port = setup.eel_port
+sys_ip = get_ip()
+link = 'http://'+str(sys_ip)+':'+str(eel_port)+'/game.html'
+qr = qrcode.make(link).resize((350, 350)).convert("RGB")
+qr.save("web/qr.png", format="png")
+print(link)
+
+eel.init('web')
+
+start_eel()
+
+
+os.kill(os.getpid(), 9)  # exit the hard way
