@@ -1,7 +1,7 @@
 # Made by Joey Pehlke
 # Github: https://github.com/Jonator3
 # Projeckt: https://github.com/Jonator3/SnakeParty
-# last Update: 06.11.2019
+
 import datetime
 import socket
 import queue
